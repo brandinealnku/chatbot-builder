@@ -1,360 +1,299 @@
-export default function LeadLoopLandingPage() {
-  return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.35),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.25),_transparent_30%)]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-6 lg:px-8">
-          <header className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold shadow-lg ring-1 ring-white/20">
-                L
-              </div>
-              <div>
-                <div className="text-lg font-semibold tracking-tight">LeadLoop</div>
-                <div className="text-sm text-slate-300">AI chatbots for growing businesses</div>
-              </div>
-            </div>
-            <nav className="hidden items-center gap-8 text-sm text-slate-200 md:flex">
-              <a href="#features" className="transition hover:text-white">Features</a>
-              <a href="#how-it-works" className="transition hover:text-white">How it works</a>
-              <a href="#results" className="transition hover:text-white">Results</a>
-              <a href="#pricing" className="transition hover:text-white">Pricing</a>
-            </nav>
-            <div className="hidden gap-3 md:flex">
-              <button className="rounded-2xl border border-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
-                Sign in
-              </button>
-              <button className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-xl transition hover:-translate-y-0.5">
-                Start free
-              </button>
-            </div>
-          </header>
-
-          <div className="grid items-center gap-14 py-16 lg:grid-cols-2 lg:py-24">
-            <div>
-              <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-slate-100 backdrop-blur">
-                Turn website traffic into conversations, leads, and sales
-              </div>
-              <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-                Launch an AI chatbot that works your website for you — 24/7.
-              </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-                LeadLoop helps businesses answer visitor questions instantly, capture leads automatically, and convert more traffic without adding more work to the team.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <button className="rounded-2xl bg-emerald-400 px-6 py-4 text-base font-semibold text-slate-950 shadow-2xl transition hover:-translate-y-0.5 hover:bg-emerald-300">
-                  Start free
-                </button>
-                <button className="rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/10">
-                  Watch demo
-                </button>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-300">
-                <div>✓ No coding required</div>
-                <div>✓ Install in minutes</div>
-                <div>✓ Lead capture built in</div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur-xl">
-                <div className="rounded-[1.5rem] bg-slate-950/90 p-5 ring-1 ring-white/10">
-                  <div className="mb-4 flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-slate-400">Live chatbot preview</div>
-                      <div className="text-lg font-semibold">Lead capture in action</div>
-                    </div>
-                    <div className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-                      Active now
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 rounded-3xl bg-slate-900 p-4">
-                    <div className="max-w-[80%] rounded-2xl rounded-tl-md bg-slate-800 px-4 py-3 text-sm text-slate-200">
-                      Hi there 👋 Looking for pricing, services, or help getting started?
-                    </div>
-                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-md bg-blue-500 px-4 py-3 text-sm text-white">
-                      I’d love pricing info and want to know how quickly this can go live.
-                    </div>
-                    <div className="max-w-[85%] rounded-2xl rounded-tl-md bg-slate-800 px-4 py-3 text-sm text-slate-200">
-                      We can help with that. Most businesses launch in minutes. Want me to send pricing and have our team follow up?
-                    </div>
-                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
-                      <div className="text-xs font-semibold uppercase tracking-wide text-emerald-300">New lead captured</div>
-                      <div className="mt-2 grid gap-2 text-sm text-slate-100 sm:grid-cols-2">
-                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Name: Alex Morgan</div>
-                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Business: Northside Dental</div>
-                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Interest: Pricing</div>
-                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Status: Ready to contact</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -right-4 -top-4 hidden rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100 shadow-xl backdrop-blur md:block">
-                +37% more leads
-              </div>
-              <div className="absolute -bottom-4 -left-4 hidden rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100 shadow-xl backdrop-blur md:block">
-                Replies in seconds
-              </div>
-            </div>
-          </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadLoop — AI Chatbots That Turn Website Visitors Into Leads</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div>
+          LeadLoop
+          <small>AI chatbots for growing businesses</small>
         </div>
-      </section>
+      </div>
 
-      <section className="border-b border-slate-200 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-6 text-center text-sm font-medium text-slate-500">
-            <span>Built for service businesses</span>
-            <span>•</span>
-            <span>Made for agencies</span>
-            <span>•</span>
-            <span>Designed for local brands</span>
-            <span>•</span>
-            <span>Ready for growing teams</span>
-          </div>
-        </div>
-      </section>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/app.html">App</a>
+      </div>
 
-      <section id="results" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
-            Why LeadLoop converts
-          </div>
-          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-            Your website should do more than exist. It should help close business.
-          </h2>
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            LeadLoop is designed to reduce drop-off, answer buyer questions at the right moment, and turn more visitors into qualified leads.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {[
-            {
-              title: "Respond instantly",
-              text: "Stop losing potential customers when no one is available to answer questions.",
-            },
-            {
-              title: "Capture more leads",
-              text: "Collect names, emails, and buying intent while visitors are actively engaged.",
-            },
-            {
-              title: "Save your team time",
-              text: "Automate repetitive conversations so your team can focus on high-value work.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-lg font-bold text-white">
-                ✓
-              </div>
-              <h3 className="text-xl font-bold">{item.title}</h3>
-              <p className="mt-3 leading-7 text-slate-600">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="features" className="bg-slate-50 py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div>
-              <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">
-                Everything you need to launch fast
-              </div>
-              <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-                A chatbot platform built for business growth, not technical headaches.
-              </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-                From setup to lead capture to reporting, LeadLoop gives you a clean, simple system for turning your website into a smarter sales channel.
-              </p>
-
-              <div className="mt-10 grid gap-5 sm:grid-cols-2">
-                {[
-                  ["AI-powered answers", "Answer common questions using your business content and offers."],
-                  ["Lead capture forms", "Collect visitor details directly inside the chat experience."],
-                  ["Easy website install", "Add your chatbot to your site in minutes with a simple widget."],
-                  ["Central dashboard", "Track conversations, leads, and performance in one place."],
-                  ["Custom conversation flows", "Guide visitors toward booking, buying, or contacting your team."],
-                  ["Scalable plans", "Start simple and expand as your business or client roster grows."],
-                ].map(([title, text]) => (
-                  <div key={title} className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h3 className="text-base font-bold">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-              <div className="rounded-[1.5rem] bg-slate-950 p-6 text-white">
-                <div className="text-sm text-slate-400">Dashboard snapshot</div>
-                <div className="mt-1 text-2xl font-bold">This week’s performance</div>
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  {[
-                    ["124", "Conversations started"],
-                    ["38", "Leads captured"],
-                    ["31%", "Lead conversion rate"],
-                    ["5 min", "Average setup time"],
-                  ].map(([value, label]) => (
-                    <div key={label} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                      <div className="text-2xl font-black">{value}</div>
-                      <div className="mt-1 text-sm text-slate-300">{label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 rounded-2xl bg-emerald-400/10 p-4 text-sm text-emerald-200 ring-1 ring-emerald-400/20">
-                  Great fit for service providers, consultants, agencies, clinics, local brands, and growing businesses that want more value from website traffic.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
-            Simple setup
-          </div>
-          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-            Go from website visitor to captured lead in three simple steps.
-          </h2>
-        </div>
-
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {[
-            ["1", "Create your chatbot", "Add your business details, offers, and key FAQs."],
-            ["2", "Install on your site", "Drop in your widget and publish it in minutes."],
-            ["3", "Capture and convert leads", "Let LeadLoop answer questions and collect contact details automatically."],
-          ].map(([step, title, text]) => (
-            <div key={step} className="relative rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white">
-                {step}
-              </div>
-              <h3 className="text-xl font-bold">{title}</h3>
-              <p className="mt-3 leading-7 text-slate-600">{text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-slate-950 py-20 text-white">
-        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8">
-          <div className="inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-200">
-            Social proof section
-          </div>
-          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-            Built for the moment when visitors are ready to ask, compare, and decide.
-          </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-300">
-            Whether someone wants pricing, services, availability, or next steps, LeadLoop helps you stay responsive without needing someone live on chat all day.
-          </p>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {[
-              '“This feels like having a smarter front desk on our website.”',
-              '“Way easier than the other chatbot tools we tried.”',
-              '“We finally have a simple way to capture leads after hours.”',
-            ].map((quote, i) => (
-              <div key={i} className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-left backdrop-blur">
-                <div className="text-lg leading-8 text-slate-100">{quote}</div>
-                <div className="mt-5 text-sm text-slate-400">Example testimonial placeholder</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
-            Pricing
-          </div>
-          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-            Choose the plan that fits your business stage.
-          </h2>
-        </div>
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
-          {[
-            {
-              name: 'Starter',
-              price: '$39',
-              desc: 'Perfect for launching your first chatbot.',
-              features: ['1 chatbot', 'Website widget', 'Basic lead capture', 'Simple dashboard'],
-              featured: false,
-            },
-            {
-              name: 'Growth',
-              price: '$99',
-              desc: 'Best for growing businesses ready to scale.',
-              features: ['Multiple chatbots', 'Advanced lead tracking', 'Custom flows', 'Expanded reporting'],
-              featured: true,
-            },
-            {
-              name: 'Custom',
-              price: 'Talk to us',
-              desc: 'For agencies, multi-location brands, and specialized rollouts.',
-              features: ['Agency support', 'Multi-client setup', 'Custom onboarding', 'Tailored implementation'],
-              featured: false,
-            },
-          ].map((plan) => (
-            <div
-              key={plan.name}
-              className={`rounded-[2rem] p-8 shadow-sm ring-1 ${
-                plan.featured
-                  ? 'bg-slate-950 text-white ring-slate-950 shadow-2xl'
-                  : 'bg-white text-slate-900 ring-slate-200'
-              }`}
-            >
-              {plan.featured && (
-                <div className="mb-4 inline-flex rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-950">
-                  Most popular
-                </div>
-              )}
-              <h3 className="text-2xl font-bold">{plan.name}</h3>
-              <div className="mt-4 text-4xl font-black">{plan.price}<span className="text-base font-medium opacity-70">{plan.price.startsWith('$') ? '/mo' : ''}</span></div>
-              <p className={`mt-4 leading-7 ${plan.featured ? 'text-slate-300' : 'text-slate-600'}`}>{plan.desc}</p>
-              <ul className={`mt-6 space-y-3 text-sm ${plan.featured ? 'text-slate-200' : 'text-slate-700'}`}>
-                {plan.features.map((feature) => (
-                  <li key={feature}>✓ {feature}</li>
-                ))}
-              </ul>
-              <button
-                className={`mt-8 w-full rounded-2xl px-5 py-4 text-sm font-semibold transition hover:-translate-y-0.5 ${
-                  plan.featured
-                    ? 'bg-emerald-400 text-slate-950 hover:bg-emerald-300'
-                    : 'bg-slate-950 text-white hover:bg-slate-800'
-                }`}
-              >
-                {plan.name === 'Custom' ? 'Contact sales' : 'Start free'}
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-gradient-to-br from-blue-600 to-emerald-400 py-20 text-slate-950">
-        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8">
-          <h2 className="text-3xl font-black tracking-tight sm:text-5xl">
-            Start turning more website visitors into leads today.
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-900/80">
-            Launch fast, stay responsive, and give your website a job to do.
-          </p>
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <button className="rounded-2xl bg-slate-950 px-6 py-4 text-base font-semibold text-white shadow-xl transition hover:-translate-y-0.5">
-              Start free
-            </button>
-            <button className="rounded-2xl border border-slate-950/15 bg-white/60 px-6 py-4 text-base font-semibold text-slate-950 backdrop-blur transition hover:bg-white/80">
-              Book a demo
-            </button>
-          </div>
-        </div>
-      </section>
+      <div style="display:flex;gap:10px;">
+        <a class="btn btn-secondary" href="/app.html">Sign in</a>
+        <a class="btn btn-primary" href="/app.html">Start free</a>
+      </div>
     </div>
-  );
-}
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <span class="badge">Turn website traffic into leads, conversations, and customers</span>
+        <h1>Launch an AI chatbot that works your website for you — 24/7.</h1>
+        <p>
+          LeadLoop helps businesses instantly answer visitor questions, capture leads automatically,
+          and turn more website traffic into real opportunities — without adding more work to your team.
+        </p>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/app.html">Start free</a>
+          <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
+        </div>
+
+        <div class="pill-row" style="margin-top:18px;">
+          <span class="pill">No coding required</span>
+          <span class="pill">Install in minutes</span>
+          <span class="pill">Lead capture built in</span>
+          <span class="pill">Simple business dashboard</span>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="grid-2" style="gap:14px;">
+          <div class="kpi">
+            <div class="muted">Faster response</div>
+            <div class="value">24/7</div>
+            <div class="muted">Answer visitors even when you’re unavailable</div>
+          </div>
+          <div class="kpi">
+            <div class="muted">Better conversion</div>
+            <div class="value">More Leads</div>
+            <div class="muted">Capture contact info while visitors are engaged</div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:18px;">
+          Your website should do more than sit there. LeadLoop helps it greet visitors,
+          answer questions, and turn interest into action automatically.
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM / VALUE -->
+    <section class="section">
+      <h2 class="section-title">Why businesses use LeadLoop</h2>
+      <p class="section-copy">
+        Most websites lose potential customers because visitors leave before they get answers.
+        LeadLoop helps you stay responsive, guide visitors to the next step, and capture leads
+        at the moment they’re most interested.
+      </p>
+
+      <div class="grid-3">
+        <div class="feature">
+          <h3>Respond instantly</h3>
+          <p class="muted">
+            Give visitors immediate answers to common questions about your services, pricing,
+            availability, or next steps.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>Capture more leads</h3>
+          <p class="muted">
+            Collect names, emails, and buying intent directly through your chatbot while people
+            are actively engaged on your site.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>Save your team time</h3>
+          <p class="muted">
+            Automate repetitive conversations so your team can focus on high-value work instead
+            of answering the same questions all day.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <h2 class="section-title">Everything you need to launch fast</h2>
+      <p class="section-copy">
+        LeadLoop is designed for business owners, agencies, and growing teams that want a chatbot
+        solution that feels simple, polished, and effective.
+      </p>
+
+      <div class="grid-3">
+        <div class="feature">
+          <h3>AI-powered conversations</h3>
+          <p class="muted">
+            Answer visitor questions naturally using your business information, services, and FAQs.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>Lead capture built in</h3>
+          <p class="muted">
+            Turn conversations into opportunities by collecting contact details and customer intent
+            directly in the chat flow.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>Simple website install</h3>
+          <p class="muted">
+            Add your chatbot to your website quickly so you can start engaging visitors right away.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>Dashboard visibility</h3>
+          <p class="muted">
+            Track chat activity, new leads, and chatbot performance from one clean dashboard.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>Custom conversation flows</h3>
+          <p class="muted">
+            Guide visitors toward booking, contacting your team, requesting a quote, or learning more.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>Built to grow with you</h3>
+          <p class="muted">
+            Start with one chatbot, then expand to multiple websites, campaigns, or clients as needed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="section">
+      <div class="grid-2">
+        <div class="card">
+          <h2>How it works</h2>
+          <ul style="line-height:1.8;">
+            <li>Create your chatbot with your business details and FAQs.</li>
+            <li>Add the widget to your website.</li>
+            <li>Let LeadLoop answer questions and capture leads automatically.</li>
+            <li>Review conversations and leads inside your dashboard.</li>
+            <li>Refine your chatbot as your business grows.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Why LeadLoop stands out</h2>
+          <p class="muted">
+            Many chatbot tools feel overwhelming, overly technical, or disconnected from what
+            businesses actually need. LeadLoop focuses on what matters most: helping you respond
+            faster, capture more leads, and create a better customer experience.
+          </p>
+          <div class="notice" style="margin-top:14px;">
+            Built for real business use — whether you're a local service provider, a growing brand,
+            or an agency supporting multiple clients.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF / USE CASES -->
+    <section class="section">
+      <h2 class="section-title">Great fit for businesses like these</h2>
+      <p class="section-copy">
+        LeadLoop works especially well for businesses that rely on fast response times, inbound interest,
+        and lead generation from their website.
+      </p>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Service businesses</h3>
+          <p class="muted">
+            Answer questions about services, pricing, and scheduling while collecting new inquiries.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Agencies</h3>
+          <p class="muted">
+            Offer chatbot setup and lead capture as a value-added service for clients.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Growing brands</h3>
+          <p class="muted">
+            Improve customer experience, reduce drop-off, and support more conversions from traffic.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section">
+      <h2 class="section-title">Simple pricing that scales with you</h2>
+      <p class="section-copy">
+        Start with what you need today and upgrade as your business grows.
+      </p>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Starter</h3>
+          <div style="font-size:2rem;font-weight:900;">$39<span class="muted" style="font-size:1rem;">/mo</span></div>
+          <p class="muted">Perfect for launching your first chatbot.</p>
+          <ul style="line-height:1.8; padding-left:18px;">
+            <li>1 chatbot</li>
+            <li>Website widget</li>
+            <li>Basic lead capture</li>
+            <li>Simple dashboard</li>
+          </ul>
+          <a class="btn btn-primary" href="/app.html" style="margin-top:14px;">Start free</a>
+        </div>
+
+        <div class="card" style="border:2px solid #111;">
+          <h3>Growth</h3>
+          <div style="font-size:2rem;font-weight:900;">$99<span class="muted" style="font-size:1rem;">/mo</span></div>
+          <p class="muted">Best for growing businesses ready for more control.</p>
+          <ul style="line-height:1.8; padding-left:18px;">
+            <li>Multiple chatbots</li>
+            <li>Advanced lead tracking</li>
+            <li>Custom conversation flows</li>
+            <li>Expanded reporting</li>
+          </ul>
+          <a class="btn btn-primary" href="/app.html" style="margin-top:14px;">Start free</a>
+        </div>
+
+        <div class="card">
+          <h3>Custom</h3>
+          <div style="font-size:2rem;font-weight:900;">Talk to us</div>
+          <p class="muted">For agencies, multi-location businesses, and custom rollouts.</p>
+          <ul style="line-height:1.8; padding-left:18px;">
+            <li>Agency support</li>
+            <li>Multi-client setup</li>
+            <li>Custom onboarding</li>
+            <li>Tailored implementation</li>
+          </ul>
+          <a class="btn btn-secondary" href="/app.html" style="margin-top:14px;">Contact sales</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section">
+      <div class="card" style="text-align:center; padding:48px 24px;">
+        <h2 style="margin-bottom:12px;">Start turning more website visitors into leads today</h2>
+        <p class="section-copy" style="max-width:700px; margin:0 auto 24px;">
+          Launch fast, stay responsive, and give your website a real job to do.
+          With LeadLoop, your chatbot can start working for your business in minutes.
+        </p>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/app.html">Start free</a>
+          <a class="btn btn-secondary" href="/app.html">Book a demo</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    <div class="container">
+      LeadLoop — AI chatbots that help businesses engage visitors, capture leads, and grow smarter.
+    </div>
+  </div>
+</body>
+</html>
