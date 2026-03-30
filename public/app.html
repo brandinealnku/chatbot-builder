@@ -290,107 +290,76 @@
   </div>
 
   <script type="module">
-    import {
-      hasFirebaseConfig,
-      initFirebase,
-      signUpWithEmail,
-      signInWithEmail,
-      watchAuth,
-      loadUserProfile,
-      saveChatbot,
-      listChatbots,
-      listRecentLeads,
-      logOut,
-      getFunctionUrl,
-      getServices,
-      createLeadMirror
-    } from "./assets/firebase-app.js";
+  import {
+    hasFirebaseConfig,
+    initFirebase,
+    signUpWithEmail,
+    signInWithEmail,
+    watchAuth,
+    loadUserProfile,
+    saveChatbot,
+    listChatbots,
+    listRecentLeads,
+    logOut,
+    getFunctionUrl,
+    getServices,
+    createLeadMirror
+  } from "./assets/firebase-app.js";
 
-    import {
-      collection,
-      getDocs,
-      query,
-      where,
-      orderBy
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  import {
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const configSection = document.getElementById("configSection");
-    const authSection = document.getElementById("authSection");
-    const dashboardSection = document.getElementById("dashboardSection");
-    const signupForm = document.getElementById("signupForm");
-    const signinForm = document.getElementById("signinForm");
-    const authMessage = document.getElementById("authMessage");
-    const signOutBtn = document.getElementById("signOutBtn");
-    const builderForm = document.getElementById("builderForm");
-    const loadDemoBtn = document.getElementById("loadDemoBtn");
-    const previewTitle = document.getElementById("previewTitle");
-    const previewSubtitle = document.getElementById("previewSubtitle");
-    const previewStatus = document.getElementById("previewStatus");
-    const chatPreview = document.getElementById("chatPreview");
-    const previewInput = document.getElementById("previewInput");
-    const previewSend = document.getElementById("previewSend");
-    const embedOutput = document.getElementById("embedOutput");
-    const installCode = document.getElementById("installCode");
-    const chatbotsTableBody = document.getElementById("chatbotsTableBody");
-    const leadsWrap = document.getElementById("leadsWrap");
-    const navPills = Array.from(document.querySelectorAll(".nav-pill"));
-    const dashboardViews = ["overview", "builder", "chatbots", "leads", "install"];
+  const configSection = document.getElementById("configSection");
+  const authSection = document.getElementById("authSection");
+  const dashboardSection = document.getElementById("dashboardSection");
+  const signupForm = document.getElementById("signupForm");
+  const signinForm = document.getElementById("signinForm");
+  const authMessage = document.getElementById("authMessage");
+  const signOutBtn = document.getElementById("signOutBtn");
+  const builderForm = document.getElementById("builderForm");
+  const loadDemoBtn = document.getElementById("loadDemoBtn");
+  const previewTitle = document.getElementById("previewTitle");
+  const previewSubtitle = document.getElementById("previewSubtitle");
+  const previewStatus = document.getElementById("previewStatus");
+  const chatPreview = document.getElementById("chatPreview");
+  const previewInput = document.getElementById("previewInput");
+  const previewSend = document.getElementById("previewSend");
+  const embedOutput = document.getElementById("embedOutput");
+  const installCode = document.getElementById("installCode");
+  const chatbotsTableBody = document.getElementById("chatbotsTableBody");
+  const leadsWrap = document.getElementById("leadsWrap");
 
-    let currentUser = null;
-    let currentProfile = null;
-    let currentChatbot = null;
-    let previewMessages = [];
+  const dashboardViews = ["overview", "builder", "chatbots", "leads", "install"];
 
-    function show(section) {
-      configSection.classList.add("hide");
-      authSection.classList.add("hide");
-      dashboardSection.classList.add("hide");
-      section.classList.remove("hide");
-    }
+  let currentUser = null;
+  let currentProfile = null;
+  let currentChatbot = null;
+  let previewMessages = [];
 
-    function activateDashboardTab(tabId = "overview") {
-      dashboardViews.forEach((id) => {
-        const section = document.getElementById(id);
-        if (!section) return;
-        section.style.display = id === tabId ? "block" : "none";
-      });
+  function show(section) {
+    configSection.classList.add("hide");
+    authSection.classList.add("hide");
+    dashboardSection.classList.add("hide");
+    section.classList.remove("hide");
+  }
 
-      navPills.forEach((link) => {
-        const isActive = link.getAttribute("href") === `#${tabId}`;
-        link.classList.toggle("active", isActive);
-      });
-    }
+  function setAuthMessage(text, type = "") {
+    authMessage.innerHTML = `<span class="${type}">${text}</span>`;
+  }
 
-    function wireDashboardTabs() {
-      navPills.forEach((link) => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const tabId = link.getAttribute("href").replace("#", "");
-          activateDashboardTab(tabId);
-          history.replaceState(null, "", `#${tabId}`);
-        });
-      });
+  function formatTimestamp(value) {
+    if (!value) return "";
+    if (typeof value.toDate === "function") return value.toDate().toLocaleString();
+    return "";
+  }
 
-      window.addEventListener("hashchange", () => {
-        const tabId = location.hash.replace("#", "") || "overview";
-        if (dashboardViews.includes(tabId)) {
-          activateDashboardTab(tabId);
-        }
-      });
-    }
-
-    function setAuthMessage(text, type = "") {
-      authMessage.innerHTML = `<span class="${type}">${text}</span>`;
-    }
-
-    function formatTimestamp(value) {
-      if (!value) return "";
-      if (typeof value.toDate === "function") return value.toDate().toLocaleString();
-      return "";
-    }
-
-    function buildSystemPrompt(bot) {
-      return `You are the website chatbot for ${bot.businessName || "this business"}.
+  function buildSystemPrompt(bot) {
+    return `You are the website chatbot for ${bot.businessName || "this business"}.
 
 Business type: ${bot.industry}
 Tone: ${bot.tone}
@@ -416,317 +385,365 @@ ${bot.faqSeeds.length ? bot.faqSeeds.map((q, i) => `${i + 1}. ${q}`).join("\n") 
 
 Lead capture fields:
 ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None specified."}`;
-    }
+  }
 
-    function getBuilderPayload() {
-      const faqSeeds = document.getElementById("faqs").value
-        .split("\n")
-        .map(x => x.trim())
-        .filter(Boolean);
+  function getBuilderPayload() {
+    const faqSeeds = document.getElementById("faqs").value
+      .split("\n")
+      .map(x => x.trim())
+      .filter(Boolean);
 
-      const leadFields = document.getElementById("leadFields").value
-        .split(",")
-        .map(x => x.trim())
-        .filter(Boolean);
+    const leadFields = document.getElementById("leadFields").value
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
 
-      const primaryGoal = document.getElementById("primaryGoal").value;
+    const primaryGoal = document.getElementById("primaryGoal").value;
 
-      const bot = {
-        name:
-          document.getElementById("botName").value.trim() ||
-          document.getElementById("businessName").value.trim() ||
-          "Website Assistant",
-        businessName: document.getElementById("businessName").value.trim(),
-        websiteUrl: document.getElementById("websiteUrl").value.trim(),
-        industry: document.getElementById("industry").value,
-        tone: document.getElementById("tone").value,
-        primaryGoal,
-        businessDescription: document.getElementById("businessDescription").value.trim(),
-        faqSeeds,
-        hours: document.getElementById("hours").value.trim(),
-        contact: document.getElementById("contact").value.trim(),
-        serviceAreas: document.getElementById("serviceAreas").value.trim(),
-        cta: document.getElementById("cta").value.trim(),
-        status: "live",
-        theme: {
-          primaryColor: document.getElementById("brandColor").value,
-          launcherText: document.getElementById("launcherText").value.trim() || "Chat with us",
-          position: "bottom-right"
-        },
-        leadCapture: {
-          enabled: ["Capture leads", "Book appointments"].includes(primaryGoal),
-          fields: leadFields
-        }
-      };
-
-      bot.systemPrompt = buildSystemPrompt(bot);
-      return bot;
-    }
-
-    function resetPreview(bot) {
-      chatPreview.innerHTML = `<div class="bubble assistant">Hi! Welcome to ${bot.businessName || "our business"}. How can I help today?</div>`;
-      previewMessages = [];
-    }
-
-    function paintPreview(bot) {
-      previewTitle.textContent = bot.businessName || "Your chatbot";
-      previewSubtitle.textContent = `${bot.primaryGoal} • ${bot.tone}`;
-      previewStatus.className = `status ${bot.status === "live" ? "live" : "draft"}`;
-      previewStatus.textContent = bot.status || "draft";
-      document.documentElement.style.setProperty("--primary", bot.theme?.primaryColor || "#6d5efc");
-      resetPreview(bot);
-    }
-
-    function addPreviewMessage(role, text) {
-      const div = document.createElement("div");
-      div.className = `bubble ${role}`;
-      div.textContent = text;
-      chatPreview.appendChild(div);
-      chatPreview.scrollTop = chatPreview.scrollHeight;
-    }
-
-    function mockReply(text, bot) {
-      const lower = String(text || "").toLowerCase();
-
-      if (lower.includes("hours")) {
-        return bot.hours ? `${bot.businessName} is open: ${bot.hours}.` : "I don’t see business hours listed yet.";
+    const bot = {
+      name:
+        document.getElementById("botName").value.trim() ||
+        document.getElementById("businessName").value.trim() ||
+        "Website Assistant",
+      businessName: document.getElementById("businessName").value.trim(),
+      websiteUrl: document.getElementById("websiteUrl").value.trim(),
+      industry: document.getElementById("industry").value,
+      tone: document.getElementById("tone").value,
+      primaryGoal,
+      businessDescription: document.getElementById("businessDescription").value.trim(),
+      faqSeeds,
+      hours: document.getElementById("hours").value.trim(),
+      contact: document.getElementById("contact").value.trim(),
+      serviceAreas: document.getElementById("serviceAreas").value.trim(),
+      cta: document.getElementById("cta").value.trim(),
+      status: "live",
+      theme: {
+        primaryColor: document.getElementById("brandColor").value,
+        launcherText: document.getElementById("launcherText").value.trim() || "Chat with us",
+        position: "bottom-right"
+      },
+      leadCapture: {
+        enabled: ["Capture leads", "Book appointments"].includes(primaryGoal),
+        fields: leadFields
       }
+    };
 
-      if (lower.includes("contact")) {
-        return bot.contact ? `You can contact ${bot.businessName} here: ${bot.contact}.` : "I don’t have contact info listed yet.";
-      }
+    bot.systemPrompt = buildSystemPrompt(bot);
+    return bot;
+  }
 
-      if (lower.includes("book")) {
-        return bot.cta ? `I can help with that. ${bot.cta}.` : "Please contact the business to get started.";
-      }
+  function resetPreview(bot) {
+    chatPreview.innerHTML = `<div class="bubble assistant">Hi! Welcome to ${bot.businessName || "our business"}. How can I help today?</div>`;
+    previewMessages = [];
+  }
 
-      return `Thanks for reaching out to ${bot.businessName || "us"}. I’m here to help with ${String(bot.primaryGoal || "your needs").toLowerCase()}.`;
+  function paintPreview(bot) {
+    previewTitle.textContent = bot.businessName || "Your chatbot";
+    previewSubtitle.textContent = `${bot.primaryGoal} • ${bot.tone}`;
+    previewStatus.className = `status ${bot.status === "live" ? "live" : "draft"}`;
+    previewStatus.textContent = bot.status || "draft";
+    document.documentElement.style.setProperty("--primary", bot.theme?.primaryColor || "#6d5efc");
+    resetPreview(bot);
+  }
+
+  function addPreviewMessage(role, text) {
+    const div = document.createElement("div");
+    div.className = `bubble ${role}`;
+    div.textContent = text;
+    chatPreview.appendChild(div);
+    chatPreview.scrollTop = chatPreview.scrollHeight;
+  }
+
+  function mockReply(text, bot) {
+    const lower = String(text || "").toLowerCase();
+
+    if (lower.includes("hours")) {
+      return bot.hours ? `${bot.businessName} is open: ${bot.hours}.` : "I don’t see business hours listed yet.";
     }
 
-    async function loadDashboard() {
-      if (!currentUser) return;
+    if (lower.includes("contact")) {
+      return bot.contact ? `You can contact ${bot.businessName} here: ${bot.contact}.` : "I don’t have contact info listed yet.";
+    }
 
-      currentProfile = await loadUserProfile(currentUser.uid);
-      document.getElementById("welcomeTitle").textContent = `Welcome back, ${(currentProfile?.fullName || "there").split(" ")[0]}`;
-      document.getElementById("welcomeCopy").textContent = `${currentProfile?.companyName || "Your business"} • ${currentProfile?.plan || "Starter"} plan`;
+    if (lower.includes("book")) {
+      return bot.cta ? `I can help with that. ${bot.cta}.` : "Please contact the business to get started.";
+    }
 
-      const bots = await listChatbots(currentUser.uid);
-      const leads = await listRecentLeads(currentUser.uid);
+    return `Thanks for reaching out to ${bot.businessName || "us"}. I’m here to help with ${String(bot.primaryGoal || "your needs").toLowerCase()}.`;
+  }
 
-      document.getElementById("statChatbots").textContent = String(bots.length);
-      document.getElementById("statLeads").textContent = String(leads.length);
+  function activateDashboardTab(tabId = "overview") {
+    const safeTab = dashboardViews.includes(tabId) ? tabId : "overview";
 
-      if (!bots.length) {
-        chatbotsTableBody.innerHTML = '<tr><td colspan="5" class="muted">No chatbots yet.</td></tr>';
-      } else {
-        chatbotsTableBody.innerHTML = bots.map(bot => `
-          <tr>
-            <td>${bot.name || "-"}</td>
-            <td>${bot.businessName || "-"}</td>
-            <td><span class="status ${bot.status === "live" ? "live" : "draft"}">${bot.status || "draft"}</span></td>
-            <td>${bot.primaryGoal || "-"}</td>
-            <td><code>${bot.id || "-"}</code></td>
-          </tr>
-        `).join("");
-      }
+    dashboardViews.forEach((id) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+      section.hidden = id !== safeTab;
+      section.style.display = id === safeTab ? "block" : "none";
+    });
 
-      if (!leads.length) {
-        leadsWrap.innerHTML = "No leads yet.";
-      } else {
-        leadsWrap.innerHTML = leads.map(lead => {
-          const fields = Object.entries(lead.fields || {})
-            .map(([k, v]) => `<div><strong>${k}:</strong> ${v || "-"}</div>`)
-            .join("");
+    document.querySelectorAll(".nav-pill").forEach((link) => {
+      const target = (link.getAttribute("href") || "").replace("#", "");
+      link.classList.toggle("active", target === safeTab);
+    });
 
-          return `<div class="feature" style="margin-bottom:12px;">
-            <div style="font-weight:800;">${lead.businessName || "-"}</div>
-            <div class="muted" style="font-size:.88rem;margin-bottom:6px;">${formatTimestamp(lead.createdAt)}</div>
-            ${fields}
-          </div>`;
-        }).join("");
-      }
+    const createBtn = document.querySelector('.topbar a[href="#builder"]');
+    if (createBtn) {
+      createBtn.setAttribute("aria-current", safeTab === "builder" ? "page" : "false");
+    }
 
-      show(dashboardSection);
+    console.log("Activated tab:", safeTab);
+  }
+
+  function goToTab(tabId) {
+    const safeTab = dashboardViews.includes(tabId) ? tabId : "overview";
+    history.replaceState(null, "", `#${safeTab}`);
+    activateDashboardTab(safeTab);
+  }
+
+  function wireDashboardTabs() {
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest('a[href^="#"]');
+      if (!link) return;
+
+      const href = link.getAttribute("href");
+      const tabId = href.replace("#", "");
+
+      if (!dashboardViews.includes(tabId)) return;
+
+      e.preventDefault();
+      goToTab(tabId);
+    });
+
+    window.addEventListener("hashchange", () => {
       const tabId = location.hash.replace("#", "") || "overview";
-      activateDashboardTab(dashboardViews.includes(tabId) ? tabId : "overview");
+      activateDashboardTab(tabId);
+    });
+  }
+
+  async function loadDashboard() {
+    if (!currentUser) return;
+
+    currentProfile = await loadUserProfile(currentUser.uid);
+    document.getElementById("welcomeTitle").textContent = `Welcome back, ${(currentProfile?.fullName || "there").split(" ")[0]}`;
+    document.getElementById("welcomeCopy").textContent = `${currentProfile?.companyName || "Your business"} • ${currentProfile?.plan || "Starter"} plan`;
+
+    const bots = await listChatbots(currentUser.uid);
+    const leads = await listRecentLeads(currentUser.uid);
+
+    document.getElementById("statChatbots").textContent = String(bots.length);
+    document.getElementById("statLeads").textContent = String(leads.length);
+
+    if (!bots.length) {
+      chatbotsTableBody.innerHTML = '<tr><td colspan="5" class="muted">No chatbots yet.</td></tr>';
+    } else {
+      chatbotsTableBody.innerHTML = bots.map(bot => `
+        <tr>
+          <td>${bot.name || "-"}</td>
+          <td>${bot.businessName || "-"}</td>
+          <td><span class="status ${bot.status === "live" ? "live" : "draft"}">${bot.status || "draft"}</span></td>
+          <td>${bot.primaryGoal || "-"}</td>
+          <td><code>${bot.id || "-"}</code></td>
+        </tr>
+      `).join("");
     }
 
-    async function mirrorPublicLeadsToPrivate() {
-      if (!currentUser) return;
+    if (!leads.length) {
+      leadsWrap.innerHTML = "No leads yet.";
+    } else {
+      leadsWrap.innerHTML = leads.map(lead => {
+        const fields = Object.entries(lead.fields || {})
+          .map(([k, v]) => `<div><strong>${k}:</strong> ${v || "-"}</div>`)
+          .join("");
 
-      const { db } = getServices();
-      const q = query(
-        collection(db, "publicLeads"),
-        where("ownerId", "==", currentUser.uid),
-        orderBy("createdAt", "desc")
-      );
-
-      const snap = await getDocs(q);
-      const leads = snap.docs.map(d => d.data());
-
-      for (const lead of leads.slice(0, 8)) {
-        await createLeadMirror(currentUser.uid, lead);
-      }
+        return `<div class="feature" style="margin-bottom:12px;">
+          <div style="font-weight:800;">${lead.businessName || "-"}</div>
+          <div class="muted" style="font-size:.88rem;margin-bottom:6px;">${formatTimestamp(lead.createdAt)}</div>
+          ${fields}
+        </div>`;
+      }).join("");
     }
 
-    signupForm.addEventListener("submit", async (e) => {
+    show(dashboardSection);
+    activateDashboardTab(location.hash.replace("#", "") || "overview");
+  }
+
+  async function mirrorPublicLeadsToPrivate() {
+    if (!currentUser) return;
+
+    const { db } = getServices();
+    const q = query(
+      collection(db, "publicLeads"),
+      where("ownerId", "==", currentUser.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const snap = await getDocs(q);
+    const leads = snap.docs.map(d => d.data());
+
+    for (const lead of leads.slice(0, 8)) {
+      await createLeadMirror(currentUser.uid, lead);
+    }
+  }
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+      const fullName = document.getElementById("fullName").value.trim();
+      const companyName = document.getElementById("companyName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+
+      await signUpWithEmail(email, password, { fullName, companyName });
+      setAuthMessage("Account created successfully.", "success");
+    } catch (error) {
+      setAuthMessage(error.message, "error");
+    }
+  });
+
+  signinForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+      const email = document.getElementById("signinEmail").value.trim();
+      const password = document.getElementById("signinPassword").value;
+
+      await signInWithEmail(email, password);
+      setAuthMessage("Signed in successfully.", "success");
+    } catch (error) {
+      setAuthMessage(error.message, "error");
+    }
+  });
+
+  signOutBtn.addEventListener("click", async () => {
+    await logOut();
+  });
+
+  builderForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    const payload = getBuilderPayload();
+    const saved = await saveChatbot(currentUser.uid, payload);
+    currentChatbot = saved;
+    paintPreview(saved);
+
+    const projectId = window.LEADLOOP_FIREBASE_CONFIG?.projectId || "";
+    const functionUrl = getFunctionUrl("chatReply");
+
+    const snippet =
+      `<!-- LeadLoop Widget -->\n` +
+      `<script>\n` +
+      `  window.MyChatbotConfig = {\n` +
+      `    chatbotId: "${saved.id}",\n` +
+      `    projectId: "${projectId}",\n` +
+      `    functionUrl: "${functionUrl || ""}"\n` +
+      `  };\n` +
+      `<\/script>\n` +
+      `<script src="https://YOUR_DOMAIN/widget.js" async><\/script>`;
+
+    embedOutput.textContent = snippet;
+    installCode.textContent = snippet;
+
+    await mirrorPublicLeadsToPrivate();
+    await loadDashboard();
+    goToTab("chatbots");
+  });
+
+  loadDemoBtn.addEventListener("click", () => {
+    document.getElementById("botName").value = "Main website assistant";
+    document.getElementById("businessName").value = "Bloom & Birch Salon";
+    document.getElementById("websiteUrl").value = "https://bloomandbirch.example";
+    document.getElementById("industry").value = "Salon";
+    document.getElementById("tone").value = "Warm and conversational";
+    document.getElementById("primaryGoal").value = "Book appointments";
+    document.getElementById("businessDescription").value = "We are a modern salon offering cuts, color, styling, and bridal services for busy professionals and event clients.";
+    document.getElementById("faqs").value = "What services do you offer?\nWhat are your hours?\nDo I need an appointment?\nDo you take walk-ins?\nDo you offer bridal styling?";
+    document.getElementById("hours").value = "Tue-Sat 9am-7pm";
+    document.getElementById("contact").value = "(555) 222-1010 | hello@bloomandbirch.com";
+    document.getElementById("serviceAreas").value = "Cincinnati, Northern Kentucky";
+    document.getElementById("cta").value = "Book your appointment now";
+    document.getElementById("brandColor").value = "#d946ef";
+    document.getElementById("launcherText").value = "Book with us";
+    document.getElementById("leadFields").value = "Name, Email, Phone, Requested Service";
+  });
+
+  previewSend.addEventListener("click", sendPreviewChat);
+
+  previewInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
       e.preventDefault();
+      sendPreviewChat();
+    }
+  });
 
-      try {
-        const fullName = document.getElementById("fullName").value.trim();
-        const companyName = document.getElementById("companyName").value.trim();
-        const email = document.getElementById("signupEmail").value.trim();
-        const password = document.getElementById("signupPassword").value;
+  async function sendPreviewChat() {
+    const text = previewInput.value.trim();
+    if (!text || !currentChatbot) return;
 
-        await signUpWithEmail(email, password, { fullName, companyName });
-        setAuthMessage("Account created successfully.", "success");
-      } catch (error) {
-        setAuthMessage(error.message, "error");
-      }
-    });
+    addPreviewMessage("user", text);
+    previewMessages.push({ role: "user", content: text });
+    previewInput.value = "";
 
-    signinForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const functionUrl = getFunctionUrl("chatReply");
 
-      try {
-        const email = document.getElementById("signinEmail").value.trim();
-        const password = document.getElementById("signinPassword").value;
-
-        await signInWithEmail(email, password);
-        setAuthMessage("Signed in successfully.", "success");
-      } catch (error) {
-        setAuthMessage(error.message, "error");
-      }
-    });
-
-    signOutBtn.addEventListener("click", async () => {
-      await logOut();
-    });
-
-    builderForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const payload = getBuilderPayload();
-      const saved = await saveChatbot(currentUser.uid, payload);
-      currentChatbot = saved;
-      paintPreview(saved);
-
-      const projectId = window.LEADLOOP_FIREBASE_CONFIG?.projectId || "";
-      const functionUrl = getFunctionUrl("chatReply");
-
-      const snippet =
-        `<!-- LeadLoop Widget -->\n` +
-        `<script>\n` +
-        `  window.MyChatbotConfig = {\n` +
-        `    chatbotId: "${saved.id}",\n` +
-        `    projectId: "${projectId}",\n` +
-        `    functionUrl: "${functionUrl || ""}"\n` +
-        `  };\n` +
-        `<\/script>\n` +
-        `<script src="https://YOUR_DOMAIN/widget.js" async><\/script>`;
-
-      embedOutput.textContent = snippet;
-      installCode.textContent = snippet;
-
-      await mirrorPublicLeadsToPrivate();
-      await loadDashboard();
-      history.replaceState(null, "", "#chatbots");
-      activateDashboardTab("chatbots");
-    });
-
-    loadDemoBtn.addEventListener("click", () => {
-      document.getElementById("botName").value = "Main website assistant";
-      document.getElementById("businessName").value = "Bloom & Birch Salon";
-      document.getElementById("websiteUrl").value = "https://bloomandbirch.example";
-      document.getElementById("industry").value = "Salon";
-      document.getElementById("tone").value = "Warm and conversational";
-      document.getElementById("primaryGoal").value = "Book appointments";
-      document.getElementById("businessDescription").value = "We are a modern salon offering cuts, color, styling, and bridal services for busy professionals and event clients.";
-      document.getElementById("faqs").value = "What services do you offer?\nWhat are your hours?\nDo I need an appointment?\nDo you take walk-ins?\nDo you offer bridal styling?";
-      document.getElementById("hours").value = "Tue-Sat 9am-7pm";
-      document.getElementById("contact").value = "(555) 222-1010 | hello@bloomandbirch.com";
-      document.getElementById("serviceAreas").value = "Cincinnati, Northern Kentucky";
-      document.getElementById("cta").value = "Book your appointment now";
-      document.getElementById("brandColor").value = "#d946ef";
-      document.getElementById("launcherText").value = "Book with us";
-      document.getElementById("leadFields").value = "Name, Email, Phone, Requested Service";
-    });
-
-    previewSend.addEventListener("click", sendPreviewChat);
-
-    previewInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendPreviewChat();
-      }
-    });
-
-    async function sendPreviewChat() {
-      const text = previewInput.value.trim();
-      if (!text || !currentChatbot) return;
-
-      addPreviewMessage("user", text);
-      previewMessages.push({ role: "user", content: text });
-      previewInput.value = "";
-
-      const functionUrl = getFunctionUrl("chatReply");
-
-      if (!functionUrl) {
-        const reply = mockReply(text, currentChatbot);
-        addPreviewMessage("assistant", reply);
-        previewMessages.push({ role: "assistant", content: reply });
-        return;
-      }
-
-      try {
-        const response = await fetch(functionUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chatbotId: currentChatbot.id,
-            messages: previewMessages
-          })
-        });
-
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Chat failed.");
-
-        addPreviewMessage("assistant", data.reply);
-        previewMessages.push({ role: "assistant", content: data.reply });
-      } catch (error) {
-        addPreviewMessage("assistant", error.message);
-      }
+    if (!functionUrl) {
+      const reply = mockReply(text, currentChatbot);
+      addPreviewMessage("assistant", reply);
+      previewMessages.push({ role: "assistant", content: reply });
+      return;
     }
 
-    function init() {
-      if (!hasFirebaseConfig()) {
-        show(configSection);
-        return;
-      }
-
-      try {
-        initFirebase();
-      } catch (error) {
-        show(configSection);
-        return;
-      }
-
-      wireDashboardTabs();
-
-      watchAuth(async (user) => {
-        currentUser = user;
-
-        if (user) {
-          await mirrorPublicLeadsToPrivate();
-          await loadDashboard();
-        } else {
-          show(authSection);
-        }
+    try {
+      const response = await fetch(functionUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatbotId: currentChatbot.id,
+          messages: previewMessages
+        })
       });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Chat failed.");
+
+      addPreviewMessage("assistant", data.reply);
+      previewMessages.push({ role: "assistant", content: data.reply });
+    } catch (error) {
+      addPreviewMessage("assistant", error.message);
+    }
+  }
+
+  function init() {
+    wireDashboardTabs();
+
+    if (!hasFirebaseConfig()) {
+      show(configSection);
+      return;
     }
 
-    init();
-  </script>
+    try {
+      initFirebase();
+    } catch (error) {
+      console.error("Firebase init failed:", error);
+      show(configSection);
+      return;
+    }
+
+    watchAuth(async (user) => {
+      currentUser = user;
+
+      if (user) {
+        await mirrorPublicLeadsToPrivate();
+        await loadDashboard();
+      } else {
+        show(authSection);
+      }
+    });
+  }
+
+  init();
+</script>
 </body>
 </html>
