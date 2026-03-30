@@ -1,0 +1,10 @@
+{
+  "name": "leadloop-firebase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Firebase-backed SaaS chatbot builder starter",
+  "scripts": {
+    "serve": "firebase emulators:start",
+    "deploy": "firebase deploy"
+  }
+}

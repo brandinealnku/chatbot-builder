@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example Client Site</title>
+</head>
+<body style="font-family:Inter,system-ui,sans-serif;padding:40px;">
+  <h1>Example Business Website</h1>
+  <p>This page simulates a real client website where the LeadLoop widget is installed.</p>
+
+  <script>
+    window.MyChatbotConfig = {
+      chatbotId: "replace-with-real-chatbot-id",
+      projectId: "your-firebase-project-id",
+      functionUrl: "https://us-central1-your-firebase-project-id.cloudfunctions.net/chatReply"
+    };
+  </script>
+  <script src="https://your-domain.com/widget.js" async></script>
+</body>
+</html>
