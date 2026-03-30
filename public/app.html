@@ -333,6 +333,8 @@
     const installCode = document.getElementById("installCode");
     const chatbotsTableBody = document.getElementById("chatbotsTableBody");
     const leadsWrap = document.getElementById("leadsWrap");
+    const navPills = Array.from(document.querySelectorAll(".nav-pill"));
+    const dashboardViews = ["overview", "builder", "chatbots", "leads", "install"];
 
     let currentUser = null;
     let currentProfile = null;
@@ -344,6 +346,37 @@
       authSection.classList.add("hide");
       dashboardSection.classList.add("hide");
       section.classList.remove("hide");
+    }
+
+    function activateDashboardTab(tabId = "overview") {
+      dashboardViews.forEach((id) => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        section.style.display = id === tabId ? "block" : "none";
+      });
+
+      navPills.forEach((link) => {
+        const isActive = link.getAttribute("href") === `#${tabId}`;
+        link.classList.toggle("active", isActive);
+      });
+    }
+
+    function wireDashboardTabs() {
+      navPills.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const tabId = link.getAttribute("href").replace("#", "");
+          activateDashboardTab(tabId);
+          history.replaceState(null, "", `#${tabId}`);
+        });
+      });
+
+      window.addEventListener("hashchange", () => {
+        const tabId = location.hash.replace("#", "") || "overview";
+        if (dashboardViews.includes(tabId)) {
+          activateDashboardTab(tabId);
+        }
+      });
     }
 
     function setAuthMessage(text, type = "") {
@@ -399,9 +432,10 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
       const primaryGoal = document.getElementById("primaryGoal").value;
 
       const bot = {
-        name: document.getElementById("botName").value.trim() ||
-              document.getElementById("businessName").value.trim() ||
-              "Website Assistant",
+        name:
+          document.getElementById("botName").value.trim() ||
+          document.getElementById("businessName").value.trim() ||
+          "Website Assistant",
         businessName: document.getElementById("businessName").value.trim(),
         websiteUrl: document.getElementById("websiteUrl").value.trim(),
         industry: document.getElementById("industry").value,
@@ -513,6 +547,8 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
       }
 
       show(dashboardSection);
+      const tabId = location.hash.replace("#", "") || "overview";
+      activateDashboardTab(dashboardViews.includes(tabId) ? tabId : "overview");
     }
 
     async function mirrorPublicLeadsToPrivate() {
@@ -595,7 +631,8 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
 
       await mirrorPublicLeadsToPrivate();
       await loadDashboard();
-      location.hash = "#chatbots";
+      history.replaceState(null, "", "#chatbots");
+      activateDashboardTab("chatbots");
     });
 
     loadDemoBtn.addEventListener("click", () => {
@@ -674,6 +711,8 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
         show(configSection);
         return;
       }
+
+      wireDashboardTabs();
 
       watchAuth(async (user) => {
         currentUser = user;
