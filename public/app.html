@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadLoop App — Firebase</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script src="/assets/firebase-config.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div>
+          LeadLoop
+          <small>Firebase dashboard</small>
+        </div>
+      </div>
+
+      <nav>
+        <a href="#overview" class="nav-pill active">Overview</a>
+        <a href="#builder" class="nav-pill">Builder</a>
+        <a href="#chatbots" class="nav-pill">Chatbots</a>
+        <a href="#leads" class="nav-pill">Leads</a>
+        <a href="#install" class="nav-pill">Install</a>
+      </nav>
+
+      <div class="notice" style="margin-top:20px;">
+        Before this app can run, replace <code class="inline">public/assets/firebase-config.js</code> with your real Firebase web config.
+      </div>
+
+      <button id="signOutBtn" class="btn btn-secondary" style="width:100%;margin-top:16px;">Sign out</button>
+    </aside>
+
+    <main class="main">
+      <section id="configSection" class="panel hide">
+        <h2>Firebase setup required</h2>
+        <p class="muted">This starter is wired for Firebase, but your web app config still needs to be added.</p>
+        <div class="code">Open public/assets/firebase-config.example.js, copy it to firebase-config.js, and paste your Firebase console values there.</div>
+      </section>
+
+      <section id="authSection" class="panel hide">
+        <h2>Welcome to LeadLoop</h2>
+        <p class="muted">Create your account or sign in.</p>
+
+        <div class="grid-2">
+          <form id="signupForm" class="feature">
+            <h3>Create account</h3>
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <input id="fullName" placeholder="Brandi Neal" required />
+            </div>
+            <div class="field">
+              <label for="companyName">Company name</label>
+              <input id="companyName" placeholder="ITSBAD LLC" required />
+            </div>
+            <div class="field">
+              <label for="signupEmail">Email</label>
+              <input id="signupEmail" type="email" placeholder="you@company.com" required />
+            </div>
+            <div class="field">
+              <label for="signupPassword">Password</label>
+              <input id="signupPassword" type="password" placeholder="At least 6 characters" required />
+            </div>
+            <button class="btn btn-primary" type="submit">Create account</button>
+          </form>
+
+          <form id="signinForm" class="feature">
+            <h3>Sign in</h3>
+            <div class="field">
+              <label for="signinEmail">Email</label>
+              <input id="signinEmail" type="email" placeholder="you@company.com" required />
+            </div>
+            <div class="field">
+              <label for="signinPassword">Password</label>
+              <input id="signinPassword" type="password" placeholder="Your password" required />
+            </div>
+            <button class="btn btn-secondary" type="submit">Sign in</button>
+          </form>
+        </div>
+
+        <div id="authMessage" class="notice" style="margin-top:16px;">Use this screen to create your first Firebase-backed owner account.</div>
+      </section>
+
+      <section id="dashboardSection" class="hide">
+        <div class="topbar">
+          <div>
+            <h1 id="welcomeTitle">Dashboard</h1>
+            <p id="welcomeCopy">Manage your chatbots, leads, and install code.</p>
+          </div>
+          <a class="btn btn-primary" href="#builder">Create chatbot</a>
+        </div>
+
+        <section id="overview" class="section" style="padding-top:0;">
+          <div class="grid-3">
+            <div class="kpi">
+              <div class="muted">Chatbots</div>
+              <div class="value" id="statChatbots">0</div>
+              <div class="muted">Saved in Firestore</div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Leads</div>
+              <div class="value" id="statLeads">0</div>
+              <div class="muted">Captured for your business</div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Stack</div>
+              <div class="value">Firebase</div>
+              <div class="muted">Auth + Firestore + Hosting</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="builder" class="section">
+          <div class="grid-2">
+            <div class="panel">
+              <h2>Create a chatbot</h2>
+              <p class="muted">This builder saves directly to Firestore and publishes a public widget-safe mirror.</p>
+
+              <form id="builderForm">
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="botName">Internal chatbot name</label>
+                    <input id="botName" placeholder="Main website assistant" />
+                  </div>
+                  <div class="field">
+                    <label for="businessName">Business name</label>
+                    <input id="businessName" placeholder="Bloom & Birch Salon" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="websiteUrl">Website URL</label>
+                    <input id="websiteUrl" placeholder="https://example.com" />
+                  </div>
+                  <div class="field">
+                    <label for="industry">Industry</label>
+                    <select id="industry">
+                      <option>General</option>
+                      <option>Salon</option>
+                      <option>Medical</option>
+                      <option>Retail</option>
+                      <option>Restaurant</option>
+                      <option>Real Estate</option>
+                      <option>Fitness</option>
+                      <option>Professional Services</option>
+                      <option>Education</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="tone">Tone</label>
+                    <select id="tone">
+                      <option>Friendly and helpful</option>
+                      <option>Professional and polished</option>
+                      <option>Warm and conversational</option>
+                      <option>Confident and efficient</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="primaryGoal">Primary goal</label>
+                    <select id="primaryGoal">
+                      <option>Answer customer questions</option>
+                      <option>Capture leads</option>
+                      <option>Book appointments</option>
+                      <option>Recommend products or services</option>
+                      <option>Route support requests</option>
+                    </select>
+                  </div>
+
+                  <div class="field full">
+                    <label for="businessDescription">Business description</label>
+                    <textarea id="businessDescription" placeholder="Describe what the business does and what customers ask."></textarea>
+                  </div>
+                  <div class="field full">
+                    <label for="faqs">Top FAQs</label>
+                    <textarea id="faqs" placeholder="One FAQ per line"></textarea>
+                  </div>
+
+                  <div class="field">
+                    <label for="hours">Business hours</label>
+                    <input id="hours" placeholder="Tue-Sat 9am-7pm" />
+                  </div>
+                  <div class="field">
+                    <label for="contact">Contact info</label>
+                    <input id="contact" placeholder="(555) 222-1010 | hello@business.com" />
+                  </div>
+
+                  <div class="field">
+                    <label for="serviceAreas">Service areas / location</label>
+                    <input id="serviceAreas" placeholder="Cincinnati, Northern Kentucky" />
+                  </div>
+                  <div class="field">
+                    <label for="cta">Call to action</label>
+                    <input id="cta" placeholder="Book your appointment now" />
+                  </div>
+
+                  <div class="field">
+                    <label for="brandColor">Brand color</label>
+                    <input id="brandColor" type="color" value="#6d5efc" />
+                  </div>
+                  <div class="field">
+                    <label for="launcherText">Widget button text</label>
+                    <input id="launcherText" value="Chat with us" />
+                  </div>
+
+                  <div class="field full">
+                    <label for="leadFields">Lead capture fields</label>
+                    <input id="leadFields" placeholder="Name, Email, Phone, Requested Service" />
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                  <button class="btn btn-primary" type="submit">Save chatbot</button>
+                  <button class="btn btn-secondary" id="loadDemoBtn" type="button">Load demo data</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="panel">
+              <h2>Live preview</h2>
+              <p class="muted">Preview how the widget feels before install.</p>
+              <div class="preview-shell">
+                <div class="preview-top">
+                  <div>
+                    <div id="previewTitle" style="font-weight:900;">Your chatbot</div>
+                    <div id="previewSubtitle" class="muted" style="font-size:.88rem;">Ready to help visitors</div>
+                  </div>
+                  <span id="previewStatus" class="status draft">Draft</span>
+                </div>
+
+                <div class="preview-body" id="chatPreview">
+                  <div class="bubble assistant">Hi there. I’m your website assistant. I can answer questions and help visitors take the next step.</div>
+                </div>
+
+                <div class="preview-input">
+                  <input id="previewInput" placeholder="Ask the chatbot a question..." />
+                  <button id="previewSend" class="btn btn-primary" type="button">Send</button>
+                </div>
+              </div>
+
+              <div style="margin-top:18px;">
+                <h3 style="margin-bottom:8px;">Generated embed code</h3>
+                <div id="embedOutput" class="code">Save a chatbot to generate the embed snippet.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="chatbots" class="section">
+          <div class="panel">
+            <h2>Saved chatbots</h2>
+            <p class="muted">These are loaded from your Firestore subcollection.</p>
+            <div style="overflow:auto;">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Business</th>
+                    <th>Status</th>
+                    <th>Goal</th>
+                    <th>ID</th>
+                  </tr>
+                </thead>
+                <tbody id="chatbotsTableBody">
+                  <tr><td colspan="5" class="muted">No chatbots yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="leads" class="section">
+          <div class="panel">
+            <h2>Recent leads</h2>
+            <p class="muted">These are mirrored into your private Firestore leads collection from the public intake collection.</p>
+            <div id="leadsWrap" class="notice">No leads yet.</div>
+          </div>
+        </section>
+
+        <section id="install" class="section">
+          <div class="panel">
+            <h2>Install</h2>
+            <p class="muted">Paste this snippet before the closing <code class="inline">&lt;/body&gt;</code> tag of the client site.</p>
+            <div class="code" id="installCode">No chatbot selected yet.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      hasFirebaseConfig,
+      initFirebase,
+      signUpWithEmail,
+      signInWithEmail,
+      watchAuth,
+      loadUserProfile,
+      saveChatbot,
+      listChatbots,
+      listRecentLeads,
+      logOut,
+      getFunctionUrl,
+      getServices,
+      createLeadMirror
+    } from "/assets/firebase-app.js";
+    import {
+      collection,
+      getDocs,
+      query,
+      where,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const configSection = document.getElementById("configSection");
+    const authSection = document.getElementById("authSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const signupForm = document.getElementById("signupForm");
+    const signinForm = document.getElementById("signinForm");
+    const authMessage = document.getElementById("authMessage");
+    const signOutBtn = document.getElementById("signOutBtn");
+    const builderForm = document.getElementById("builderForm");
+    const loadDemoBtn = document.getElementById("loadDemoBtn");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewSubtitle = document.getElementById("previewSubtitle");
+    const previewStatus = document.getElementById("previewStatus");
+    const chatPreview = document.getElementById("chatPreview");
+    const previewInput = document.getElementById("previewInput");
+    const previewSend = document.getElementById("previewSend");
+    const embedOutput = document.getElementById("embedOutput");
+    const installCode = document.getElementById("installCode");
+    const chatbotsTableBody = document.getElementById("chatbotsTableBody");
+    const leadsWrap = document.getElementById("leadsWrap");
+
+    let currentUser = null;
+    let currentProfile = null;
+    let currentChatbot = null;
+    let previewMessages = [];
+
+    function show(section) {
+      configSection.classList.add("hide");
+      authSection.classList.add("hide");
+      dashboardSection.classList.add("hide");
+      section.classList.remove("hide");
+    }
+
+    function setAuthMessage(text, type = "") {
+      authMessage.innerHTML = `<span class="${type}">${text}</span>`;
+    }
+
+    function formatTimestamp(value) {
+      if (!value) return "";
+      if (typeof value.toDate === "function") return value.toDate().toLocaleString();
+      return "";
+    }
+
+    function buildSystemPrompt(bot) {
+      return `You are the website chatbot for ${bot.businessName || "this business"}.
+
+Business type: ${bot.industry}
+Tone: ${bot.tone}
+Primary goal: ${bot.primaryGoal}
+
+Business description:
+${bot.businessDescription || "No description provided."}
+
+Business hours:
+${bot.hours || "Not provided."}
+
+Contact info:
+${bot.contact || "Not provided."}
+
+Call to action:
+${bot.cta || "Contact the business."}
+
+Service areas:
+${bot.serviceAreas || "Not provided."}
+
+Frequently asked questions:
+${bot.faqSeeds.length ? bot.faqSeeds.map((q, i) => `${i + 1}. ${q}`).join("\n") : "No FAQs provided."}
+
+Lead capture fields:
+${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None specified."}`;
+    }
+
+    function getBuilderPayload() {
+      const faqSeeds = document.getElementById("faqs").value.split("\n").map(x => x.trim()).filter(Boolean);
+      const leadFields = document.getElementById("leadFields").value.split(",").map(x => x.trim()).filter(Boolean);
+      const primaryGoal = document.getElementById("primaryGoal").value;
+
+      const bot = {
+        name: document.getElementById("botName").value.trim() || document.getElementById("businessName").value.trim() || "Website Assistant",
+        businessName: document.getElementById("businessName").value.trim(),
+        websiteUrl: document.getElementById("websiteUrl").value.trim(),
+        industry: document.getElementById("industry").value,
+        tone: document.getElementById("tone").value,
+        primaryGoal,
+        businessDescription: document.getElementById("businessDescription").value.trim(),
+        faqSeeds,
+        hours: document.getElementById("hours").value.trim(),
+        contact: document.getElementById("contact").value.trim(),
+        serviceAreas: document.getElementById("serviceAreas").value.trim(),
+        cta: document.getElementById("cta").value.trim(),
+        status: "live",
+        theme: {
+          primaryColor: document.getElementById("brandColor").value,
+          launcherText: document.getElementById("launcherText").value.trim() || "Chat with us",
+          position: "bottom-right"
+        },
+        leadCapture: {
+          enabled: ["Capture leads", "Book appointments"].includes(primaryGoal),
+          fields: leadFields
+        }
+      };
+      bot.systemPrompt = buildSystemPrompt(bot);
+      return bot;
+    }
+
+    function resetPreview(bot) {
+      chatPreview.innerHTML = `<div class="bubble assistant">Hi! Welcome to ${bot.businessName || "our business"}. How can I help today?</div>`;
+      previewMessages = [];
+    }
+
+    function paintPreview(bot) {
+      previewTitle.textContent = bot.businessName || "Your chatbot";
+      previewSubtitle.textContent = `${bot.primaryGoal} • ${bot.tone}`;
+      previewStatus.className = `status ${bot.status === "live" ? "live" : "draft"}`;
+      previewStatus.textContent = bot.status || "draft";
+      document.documentElement.style.setProperty("--primary", bot.theme?.primaryColor || "#6d5efc");
+      resetPreview(bot);
+    }
+
+    function addPreviewMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = `bubble ${role}`;
+      div.textContent = text;
+      chatPreview.appendChild(div);
+      chatPreview.scrollTop = chatPreview.scrollHeight;
+    }
+
+    function mockReply(text, bot) {
+      const lower = String(text || "").toLowerCase();
+      if (lower.includes("hours")) return bot.hours ? `${bot.businessName} is open: ${bot.hours}.` : "I don’t see business hours listed yet.";
+      if (lower.includes("contact")) return bot.contact ? `You can contact ${bot.businessName} here: ${bot.contact}.` : "I don’t have contact info listed yet.";
+      if (lower.includes("book")) return bot.cta ? `I can help with that. ${bot.cta}.` : "Please contact the business to get started.";
+      return `Thanks for reaching out to ${bot.businessName || "us"}. I’m here to help with ${String(bot.primaryGoal || "your needs").toLowerCase()}.`;
+    }
+
+    async function loadDashboard() {
+      if (!currentUser) return;
+      currentProfile = await loadUserProfile(currentUser.uid);
+      document.getElementById("welcomeTitle").textContent = `Welcome back, ${(currentProfile?.fullName || "there").split(" ")[0]}`;
+      document.getElementById("welcomeCopy").textContent = `${currentProfile?.companyName || "Your business"} • ${currentProfile?.plan || "Starter"} plan`;
+
+      const bots = await listChatbots(currentUser.uid);
+      const leads = await listRecentLeads(currentUser.uid);
+
+      document.getElementById("statChatbots").textContent = String(bots.length);
+      document.getElementById("statLeads").textContent = String(leads.length);
+
+      if (!bots.length) {
+        chatbotsTableBody.innerHTML = '<tr><td colspan="5" class="muted">No chatbots yet.</td></tr>';
+      } else {
+        chatbotsTableBody.innerHTML = bots.map(bot => `
+          <tr>
+            <td>${bot.name || "-"}</td>
+            <td>${bot.businessName || "-"}</td>
+            <td><span class="status ${bot.status === "live" ? "live" : "draft"}">${bot.status || "draft"}</span></td>
+            <td>${bot.primaryGoal || "-"}</td>
+            <td><code>${bot.id || "-"}</code></td>
+          </tr>
+        `).join("");
+      }
+
+      if (!leads.length) {
+        leadsWrap.innerHTML = "No leads yet.";
+      } else {
+        leadsWrap.innerHTML = leads.map(lead => {
+          const fields = Object.entries(lead.fields || {}).map(([k, v]) => `<div><strong>${k}:</strong> ${v || "-"}</div>`).join("");
+          return `<div class="feature" style="margin-bottom:12px;">
+            <div style="font-weight:800;">${lead.businessName || "-"}</div>
+            <div class="muted" style="font-size:.88rem;margin-bottom:6px;">${formatTimestamp(lead.createdAt)}</div>
+            ${fields}
+          </div>`;
+        }).join("");
+      }
+
+      show(dashboardSection);
+    }
+
+    async function mirrorPublicLeadsToPrivate() {
+      if (!currentUser) return;
+      const { db } = getServices();
+      const q = query(collection(db, "publicLeads"), where("ownerId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      const leads = snap.docs.map(d => d.data());
+      for (const lead of leads.slice(0, 8)) {
+        await createLeadMirror(currentUser.uid, lead);
+      }
+    }
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const fullName = document.getElementById("fullName").value.trim();
+        const companyName = document.getElementById("companyName").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const password = document.getElementById("signupPassword").value;
+        await signUpWithEmail(email, password, { fullName, companyName });
+        setAuthMessage("Account created successfully.", "success");
+      } catch (error) {
+        setAuthMessage(error.message, "error");
+      }
+    });
+
+    signinForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const email = document.getElementById("signinEmail").value.trim();
+        const password = document.getElementById("signinPassword").value;
+        await signInWithEmail(email, password);
+        setAuthMessage("Signed in successfully.", "success");
+      } catch (error) {
+        setAuthMessage(error.message, "error");
+      }
+    });
+
+    signOutBtn.addEventListener("click", async () => {
+      await logOut();
+    });
+
+    builderForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const payload = getBuilderPayload();
+      const saved = await saveChatbot(currentUser.uid, payload);
+      currentChatbot = saved;
+      paintPreview(saved);
+
+      const projectId = window.LEADLOOP_FIREBASE_CONFIG.projectId;
+      const functionUrl = getFunctionUrl("chatReply");
+      const snippet = `<!-- LeadLoop Widget -->\n<script>\n  window.MyChatbotConfig = {\n    chatbotId: "${saved.id}",\n    projectId: "${projectId}",\n    functionUrl: "${functionUrl || ""}"\n  };\n</script>\n<script src="https://YOUR_DOMAIN/widget.js" async></script>`;
+      embedOutput.textContent = snippet;
+      installCode.textContent = snippet;
+
+      await mirrorPublicLeadsToPrivate();
+      await loadDashboard();
+      location.hash = "#chatbots";
+    });
+
+    loadDemoBtn.addEventListener("click", () => {
+      document.getElementById("botName").value = "Main website assistant";
+      document.getElementById("businessName").value = "Bloom & Birch Salon";
+      document.getElementById("websiteUrl").value = "https://bloomandbirch.example";
+      document.getElementById("industry").value = "Salon";
+      document.getElementById("tone").value = "Warm and conversational";
+      document.getElementById("primaryGoal").value = "Book appointments";
+      document.getElementById("businessDescription").value = "We are a modern salon offering cuts, color, styling, and bridal services for busy professionals and event clients.";
+      document.getElementById("faqs").value = "What services do you offer?\nWhat are your hours?\nDo I need an appointment?\nDo you take walk-ins?\nDo you offer bridal styling?";
+      document.getElementById("hours").value = "Tue-Sat 9am-7pm";
+      document.getElementById("contact").value = "(555) 222-1010 | hello@bloomandbirch.com";
+      document.getElementById("serviceAreas").value = "Cincinnati, Northern Kentucky";
+      document.getElementById("cta").value = "Book your appointment now";
+      document.getElementById("brandColor").value = "#d946ef";
+      document.getElementById("launcherText").value = "Book with us";
+      document.getElementById("leadFields").value = "Name, Email, Phone, Requested Service";
+    });
+
+    previewSend.addEventListener("click", sendPreviewChat);
+    previewInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendPreviewChat();
+      }
+    });
+
+    async function sendPreviewChat() {
+      const text = previewInput.value.trim();
+      if (!text || !currentChatbot) return;
+
+      addPreviewMessage("user", text);
+      previewMessages.push({ role: "user", content: text });
+      previewInput.value = "";
+
+      const functionUrl = getFunctionUrl("chatReply");
+      if (!functionUrl) {
+        const reply = mockReply(text, currentChatbot);
+        addPreviewMessage("assistant", reply);
+        previewMessages.push({ role: "assistant", content: reply });
+        return;
+      }
+
+      try {
+        const response = await fetch(functionUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chatbotId: currentChatbot.id,
+            messages: previewMessages
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Chat failed.");
+        addPreviewMessage("assistant", data.reply);
+        previewMessages.push({ role: "assistant", content: data.reply });
+      } catch (error) {
+        addPreviewMessage("assistant", error.message);
+      }
+    }
+
+    function init() {
+      if (!hasFirebaseConfig()) {
+        show(configSection);
+        return;
+      }
+      try {
+        initFirebase();
+      } catch (error) {
+        show(configSection);
+        return;
+      }
+      watchAuth(async (user) => {
+        currentUser = user;
+        if (user) {
+          await mirrorPublicLeadsToPrivate();
+          await loadDashboard();
+        } else {
+          show(authSection);
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
