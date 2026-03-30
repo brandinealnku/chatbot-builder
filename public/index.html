@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadLoop — Firebase SaaS chatbot builder</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div>
+          LeadLoop
+          <small>Firebase-powered AI chatbots for growing businesses</small>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/app.html">App</a>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <a class="btn btn-secondary" href="/app.html">Sign in</a>
+        <a class="btn btn-primary" href="/app.html">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="badge">Firebase Auth + Firestore + Hosting + Functions</span>
+        <h1>Launch a chatbot SaaS on Firebase.</h1>
+        <p>
+          This version upgrades the product into a Firebase-backed SaaS starter with real authentication,
+          Firestore data storage, a dashboard, public widget access, and an optional secure Cloud Function for AI replies.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/app.html">Open the app</a>
+          <a class="btn btn-secondary" href="#architecture">See architecture</a>
+        </div>
+        <div class="pill-row" style="margin-top:18px;">
+          <span class="pill">Firebase Authentication</span>
+          <span class="pill">Cloud Firestore</span>
+          <span class="pill">Firebase Hosting</span>
+          <span class="pill">Cloud Functions starter</span>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="grid-2" style="gap:14px;">
+          <div class="kpi">
+            <div class="muted">Storage model</div>
+            <div class="value">Live</div>
+            <div class="muted">Accounts, chatbots, leads in Firestore</div>
+          </div>
+          <div class="kpi">
+            <div class="muted">Deploy target</div>
+            <div class="value">Firebase</div>
+            <div class="muted">Hosting + emulator-ready setup</div>
+          </div>
+        </div>
+        <div class="notice" style="margin-top:18px;">
+          This starter uses official Firebase web SDK patterns with modular imports and Hosting configuration. The modular SDK is the recommended production approach for modern web apps, and Hosting is designed for static web apps with optional Functions or Cloud Run for dynamic behavior. citeturn153136search11turn153136search4
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <h2 class="section-title">What’s included</h2>
+      <p class="section-copy">
+        The Firebase version keeps the SaaS look and feel, but replaces local JSON with Firestore, adds real sign-up/sign-in,
+        and includes rules plus a function starter.
+      </p>
+      <div class="grid-3">
+        <div class="feature">
+          <h3>Auth-backed access</h3>
+          <p class="muted">Business owners create an account with email and password through Firebase Authentication. citeturn153136search7</p>
+        </div>
+        <div class="feature">
+          <h3>Firestore data model</h3>
+          <p class="muted">Profiles, chatbots, and private lead mirrors are stored in Cloud Firestore using document reads and writes. citeturn153136search0turn153136search5</p>
+        </div>
+        <div class="feature">
+          <h3>Public widget records</h3>
+          <p class="muted">A public chatbot mirror supports read access for embedded widgets while private user collections remain owner-scoped.</p>
+        </div>
+        <div class="feature">
+          <h3>Hosting-ready app</h3>
+          <p class="muted">The project includes Firebase Hosting config and emulator setup for local development and deployment. citeturn153136search1turn153136search6turn153136search8</p>
+        </div>
+        <div class="feature">
+          <h3>Functions starter</h3>
+          <p class="muted">A Cloud Function keeps OpenAI calls off the client so API keys do not sit in browser code. Firebase Functions is the right place for that server-side step. citeturn153136search16</p>
+        </div>
+        <div class="feature">
+          <h3>Realtime-ready foundation</h3>
+          <p class="muted">The current app uses one-time reads, but Firestore also supports realtime listeners if you want live-updating dashboards later. citeturn153136search18</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture" class="section">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Architecture</h2>
+          <ul style="line-height:1.8;">
+            <li>Firebase Auth handles email/password signup and sign-in.</li>
+            <li>Firestore stores owner profiles in <code class="inline">users/{uid}</code>.</li>
+            <li>Private chatbots live in <code class="inline">users/{uid}/chatbots</code>.</li>
+            <li>Public widget-safe mirrors live in <code class="inline">publicChatbots/{chatbotId}</code>.</li>
+            <li>Public widget-submitted leads land in <code class="inline">publicLeads</code>.</li>
+            <li>Owners can mirror leads into <code class="inline">users/{uid}/leads</code>.</li>
+            <li>Optional Cloud Function handles secure AI chat replies.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h2>Why this is better than pure client-side</h2>
+          <p class="muted">
+            Firebase gives you a realistic path to production without building your own backend first.
+            Firestore supports direct web access, document writes, and query reads from the browser, while Functions gives you a place for secure server-only logic. citeturn153136search0turn153136search3turn153136search16
+          </p>
+          <div class="notice" style="margin-top:14px;">
+            The widget uses public Firestore documents via the Firestore REST API so it can be embedded on outside sites without exposing owner-only dashboard data. The REST API accepts requests governed by Firestore Security Rules. citeturn153136search15turn153136search21
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="section">
+      <h2 class="section-title">SaaS pricing starter</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Starter</h3>
+          <div style="font-size:2rem;font-weight:900;">$39<span class="muted" style="font-size:1rem;">/mo</span></div>
+          <p class="muted">1 chatbot, widget install, basic leads.</p>
+        </div>
+        <div class="card">
+          <h3>Growth</h3>
+          <div style="font-size:2rem;font-weight:900;">$99<span class="muted" style="font-size:1rem;">/mo</span></div>
+          <p class="muted">Multiple chatbots, analytics, custom flows.</p>
+        </div>
+        <div class="card">
+          <h3>Custom</h3>
+          <div style="font-size:2rem;font-weight:900;">Talk to us</div>
+          <p class="muted">Agency and multi-location rollout support.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    <div class="container">LeadLoop Firebase starter — auth, Firestore, hosting, widget, and functions scaffold.</div>
+  </div>
+</body>
+</html>
