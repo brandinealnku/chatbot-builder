@@ -304,7 +304,8 @@
       getFunctionUrl,
       getServices,
       createLeadMirror
-    } from "/assets/firebase-app.js";
+    } from "./assets/firebase-app.js";
+
     import {
       collection,
       getDocs,
@@ -385,12 +386,22 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
     }
 
     function getBuilderPayload() {
-      const faqSeeds = document.getElementById("faqs").value.split("\n").map(x => x.trim()).filter(Boolean);
-      const leadFields = document.getElementById("leadFields").value.split(",").map(x => x.trim()).filter(Boolean);
+      const faqSeeds = document.getElementById("faqs").value
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      const leadFields = document.getElementById("leadFields").value
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
+
       const primaryGoal = document.getElementById("primaryGoal").value;
 
       const bot = {
-        name: document.getElementById("botName").value.trim() || document.getElementById("businessName").value.trim() || "Website Assistant",
+        name: document.getElementById("botName").value.trim() ||
+              document.getElementById("businessName").value.trim() ||
+              "Website Assistant",
         businessName: document.getElementById("businessName").value.trim(),
         websiteUrl: document.getElementById("websiteUrl").value.trim(),
         industry: document.getElementById("industry").value,
@@ -413,6 +424,7 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
           fields: leadFields
         }
       };
+
       bot.systemPrompt = buildSystemPrompt(bot);
       return bot;
     }
@@ -441,14 +453,25 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
 
     function mockReply(text, bot) {
       const lower = String(text || "").toLowerCase();
-      if (lower.includes("hours")) return bot.hours ? `${bot.businessName} is open: ${bot.hours}.` : "I don’t see business hours listed yet.";
-      if (lower.includes("contact")) return bot.contact ? `You can contact ${bot.businessName} here: ${bot.contact}.` : "I don’t have contact info listed yet.";
-      if (lower.includes("book")) return bot.cta ? `I can help with that. ${bot.cta}.` : "Please contact the business to get started.";
+
+      if (lower.includes("hours")) {
+        return bot.hours ? `${bot.businessName} is open: ${bot.hours}.` : "I don’t see business hours listed yet.";
+      }
+
+      if (lower.includes("contact")) {
+        return bot.contact ? `You can contact ${bot.businessName} here: ${bot.contact}.` : "I don’t have contact info listed yet.";
+      }
+
+      if (lower.includes("book")) {
+        return bot.cta ? `I can help with that. ${bot.cta}.` : "Please contact the business to get started.";
+      }
+
       return `Thanks for reaching out to ${bot.businessName || "us"}. I’m here to help with ${String(bot.primaryGoal || "your needs").toLowerCase()}.`;
     }
 
     async function loadDashboard() {
       if (!currentUser) return;
+
       currentProfile = await loadUserProfile(currentUser.uid);
       document.getElementById("welcomeTitle").textContent = `Welcome back, ${(currentProfile?.fullName || "there").split(" ")[0]}`;
       document.getElementById("welcomeCopy").textContent = `${currentProfile?.companyName || "Your business"} • ${currentProfile?.plan || "Starter"} plan`;
@@ -477,7 +500,10 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
         leadsWrap.innerHTML = "No leads yet.";
       } else {
         leadsWrap.innerHTML = leads.map(lead => {
-          const fields = Object.entries(lead.fields || {}).map(([k, v]) => `<div><strong>${k}:</strong> ${v || "-"}</div>`).join("");
+          const fields = Object.entries(lead.fields || {})
+            .map(([k, v]) => `<div><strong>${k}:</strong> ${v || "-"}</div>`)
+            .join("");
+
           return `<div class="feature" style="margin-bottom:12px;">
             <div style="font-weight:800;">${lead.businessName || "-"}</div>
             <div class="muted" style="font-size:.88rem;margin-bottom:6px;">${formatTimestamp(lead.createdAt)}</div>
@@ -491,10 +517,17 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
 
     async function mirrorPublicLeadsToPrivate() {
       if (!currentUser) return;
+
       const { db } = getServices();
-      const q = query(collection(db, "publicLeads"), where("ownerId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      const q = query(
+        collection(db, "publicLeads"),
+        where("ownerId", "==", currentUser.uid),
+        orderBy("createdAt", "desc")
+      );
+
       const snap = await getDocs(q);
       const leads = snap.docs.map(d => d.data());
+
       for (const lead of leads.slice(0, 8)) {
         await createLeadMirror(currentUser.uid, lead);
       }
@@ -502,11 +535,13 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
 
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       try {
         const fullName = document.getElementById("fullName").value.trim();
         const companyName = document.getElementById("companyName").value.trim();
         const email = document.getElementById("signupEmail").value.trim();
         const password = document.getElementById("signupPassword").value;
+
         await signUpWithEmail(email, password, { fullName, companyName });
         setAuthMessage("Account created successfully.", "success");
       } catch (error) {
@@ -516,9 +551,11 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
 
     signinForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       try {
         const email = document.getElementById("signinEmail").value.trim();
         const password = document.getElementById("signinPassword").value;
+
         await signInWithEmail(email, password);
         setAuthMessage("Signed in successfully.", "success");
       } catch (error) {
@@ -539,9 +576,20 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
       currentChatbot = saved;
       paintPreview(saved);
 
-      const projectId = window.LEADLOOP_FIREBASE_CONFIG.projectId;
+      const projectId = window.LEADLOOP_FIREBASE_CONFIG?.projectId || "";
       const functionUrl = getFunctionUrl("chatReply");
-      const snippet = `<!-- LeadLoop Widget -->\n<script>\n  window.MyChatbotConfig = {\n    chatbotId: "${saved.id}",\n    projectId: "${projectId}",\n    functionUrl: "${functionUrl || ""}"\n  };\n</script>\n<script src="https://YOUR_DOMAIN/widget.js" async></script>`;
+
+      const snippet =
+        `<!-- LeadLoop Widget -->\n` +
+        `<script>\n` +
+        `  window.MyChatbotConfig = {\n` +
+        `    chatbotId: "${saved.id}",\n` +
+        `    projectId: "${projectId}",\n` +
+        `    functionUrl: "${functionUrl || ""}"\n` +
+        `  };\n` +
+        `<\/script>\n` +
+        `<script src="https://YOUR_DOMAIN/widget.js" async><\/script>`;
+
       embedOutput.textContent = snippet;
       installCode.textContent = snippet;
 
@@ -569,6 +617,7 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
     });
 
     previewSend.addEventListener("click", sendPreviewChat);
+
     previewInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -585,6 +634,7 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
       previewInput.value = "";
 
       const functionUrl = getFunctionUrl("chatReply");
+
       if (!functionUrl) {
         const reply = mockReply(text, currentChatbot);
         addPreviewMessage("assistant", reply);
@@ -601,8 +651,10 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
             messages: previewMessages
           })
         });
+
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Chat failed.");
+
         addPreviewMessage("assistant", data.reply);
         previewMessages.push({ role: "assistant", content: data.reply });
       } catch (error) {
@@ -615,14 +667,17 @@ ${bot.leadCapture.fields.length ? bot.leadCapture.fields.join(", ") : "None spec
         show(configSection);
         return;
       }
+
       try {
         initFirebase();
       } catch (error) {
         show(configSection);
         return;
       }
+
       watchAuth(async (user) => {
         currentUser = user;
+
         if (user) {
           await mirrorPublicLeadsToPrivate();
           await loadDashboard();
