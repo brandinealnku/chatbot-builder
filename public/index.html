@@ -1,159 +1,360 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LeadLoop — Firebase SaaS chatbot builder</title>
-  <link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-  <header class="site-header">
-    <div class="container nav">
-      <div class="brand">
-        <div class="brand-mark">L</div>
-        <div>
-          LeadLoop
-          <small>Firebase-powered AI chatbots for growing businesses</small>
-        </div>
-      </div>
-      <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#pricing">Pricing</a>
-        <a href="/app.html">App</a>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <a class="btn btn-secondary" href="/app.html">Sign in</a>
-        <a class="btn btn-primary" href="/app.html">Start free</a>
-      </div>
-    </div>
-  </header>
+export default function LeadLoopLandingPage() {
+  return (
+    <div className="min-h-screen bg-white text-slate-900">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.35),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.25),_transparent_30%)]" />
+        <div className="relative mx-auto max-w-7xl px-6 py-6 lg:px-8">
+          <header className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold shadow-lg ring-1 ring-white/20">
+                L
+              </div>
+              <div>
+                <div className="text-lg font-semibold tracking-tight">LeadLoop</div>
+                <div className="text-sm text-slate-300">AI chatbots for growing businesses</div>
+              </div>
+            </div>
+            <nav className="hidden items-center gap-8 text-sm text-slate-200 md:flex">
+              <a href="#features" className="transition hover:text-white">Features</a>
+              <a href="#how-it-works" className="transition hover:text-white">How it works</a>
+              <a href="#results" className="transition hover:text-white">Results</a>
+              <a href="#pricing" className="transition hover:text-white">Pricing</a>
+            </nav>
+            <div className="hidden gap-3 md:flex">
+              <button className="rounded-2xl border border-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
+                Sign in
+              </button>
+              <button className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-xl transition hover:-translate-y-0.5">
+                Start free
+              </button>
+            </div>
+          </header>
 
-  <main class="container">
-    <section class="hero">
-      <div>
-        <span class="badge">Firebase Auth + Firestore + Hosting + Functions</span>
-        <h1>Launch a chatbot SaaS on Firebase.</h1>
-        <p>
-          This version upgrades the product into a Firebase-backed SaaS starter with real authentication,
-          Firestore data storage, a dashboard, public widget access, and an optional secure Cloud Function for AI replies.
-        </p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a class="btn btn-primary" href="/app.html">Open the app</a>
-          <a class="btn btn-secondary" href="#architecture">See architecture</a>
-        </div>
-        <div class="pill-row" style="margin-top:18px;">
-          <span class="pill">Firebase Authentication</span>
-          <span class="pill">Cloud Firestore</span>
-          <span class="pill">Firebase Hosting</span>
-          <span class="pill">Cloud Functions starter</span>
-        </div>
-      </div>
+          <div className="grid items-center gap-14 py-16 lg:grid-cols-2 lg:py-24">
+            <div>
+              <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-slate-100 backdrop-blur">
+                Turn website traffic into conversations, leads, and sales
+              </div>
+              <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+                Launch an AI chatbot that works your website for you — 24/7.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+                LeadLoop helps businesses answer visitor questions instantly, capture leads automatically, and convert more traffic without adding more work to the team.
+              </p>
 
-      <div class="hero-card">
-        <div class="grid-2" style="gap:14px;">
-          <div class="kpi">
-            <div class="muted">Storage model</div>
-            <div class="value">Live</div>
-            <div class="muted">Accounts, chatbots, leads in Firestore</div>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                <button className="rounded-2xl bg-emerald-400 px-6 py-4 text-base font-semibold text-slate-950 shadow-2xl transition hover:-translate-y-0.5 hover:bg-emerald-300">
+                  Start free
+                </button>
+                <button className="rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/10">
+                  Watch demo
+                </button>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-300">
+                <div>✓ No coding required</div>
+                <div>✓ Install in minutes</div>
+                <div>✓ Lead capture built in</div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur-xl">
+                <div className="rounded-[1.5rem] bg-slate-950/90 p-5 ring-1 ring-white/10">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <div className="text-sm text-slate-400">Live chatbot preview</div>
+                      <div className="text-lg font-semibold">Lead capture in action</div>
+                    </div>
+                    <div className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300">
+                      Active now
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 rounded-3xl bg-slate-900 p-4">
+                    <div className="max-w-[80%] rounded-2xl rounded-tl-md bg-slate-800 px-4 py-3 text-sm text-slate-200">
+                      Hi there 👋 Looking for pricing, services, or help getting started?
+                    </div>
+                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-md bg-blue-500 px-4 py-3 text-sm text-white">
+                      I’d love pricing info and want to know how quickly this can go live.
+                    </div>
+                    <div className="max-w-[85%] rounded-2xl rounded-tl-md bg-slate-800 px-4 py-3 text-sm text-slate-200">
+                      We can help with that. Most businesses launch in minutes. Want me to send pricing and have our team follow up?
+                    </div>
+                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-emerald-300">New lead captured</div>
+                      <div className="mt-2 grid gap-2 text-sm text-slate-100 sm:grid-cols-2">
+                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Name: Alex Morgan</div>
+                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Business: Northside Dental</div>
+                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Interest: Pricing</div>
+                        <div className="rounded-xl bg-slate-900/60 px-3 py-2">Status: Ready to contact</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -right-4 -top-4 hidden rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100 shadow-xl backdrop-blur md:block">
+                +37% more leads
+              </div>
+              <div className="absolute -bottom-4 -left-4 hidden rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100 shadow-xl backdrop-blur md:block">
+                Replies in seconds
+              </div>
+            </div>
           </div>
-          <div class="kpi">
-            <div class="muted">Deploy target</div>
-            <div class="value">Firebase</div>
-            <div class="muted">Hosting + emulator-ready setup</div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-center text-sm font-medium text-slate-500">
+            <span>Built for service businesses</span>
+            <span>•</span>
+            <span>Made for agencies</span>
+            <span>•</span>
+            <span>Designed for local brands</span>
+            <span>•</span>
+            <span>Ready for growing teams</span>
           </div>
         </div>
-        <div class="notice" style="margin-top:18px;">
-          This starter uses official Firebase web SDK patterns with modular imports and Hosting configuration. The modular SDK is the recommended production approach for modern web apps, and Hosting is designed for static web apps with optional Functions or Cloud Run for dynamic behavior. citeturn153136search11turn153136search4
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="features" class="section">
-      <h2 class="section-title">What’s included</h2>
-      <p class="section-copy">
-        The Firebase version keeps the SaaS look and feel, but replaces local JSON with Firestore, adds real sign-up/sign-in,
-        and includes rules plus a function starter.
-      </p>
-      <div class="grid-3">
-        <div class="feature">
-          <h3>Auth-backed access</h3>
-          <p class="muted">Business owners create an account with email and password through Firebase Authentication. citeturn153136search7</p>
-        </div>
-        <div class="feature">
-          <h3>Firestore data model</h3>
-          <p class="muted">Profiles, chatbots, and private lead mirrors are stored in Cloud Firestore using document reads and writes. citeturn153136search0turn153136search5</p>
-        </div>
-        <div class="feature">
-          <h3>Public widget records</h3>
-          <p class="muted">A public chatbot mirror supports read access for embedded widgets while private user collections remain owner-scoped.</p>
-        </div>
-        <div class="feature">
-          <h3>Hosting-ready app</h3>
-          <p class="muted">The project includes Firebase Hosting config and emulator setup for local development and deployment. citeturn153136search1turn153136search6turn153136search8</p>
-        </div>
-        <div class="feature">
-          <h3>Functions starter</h3>
-          <p class="muted">A Cloud Function keeps OpenAI calls off the client so API keys do not sit in browser code. Firebase Functions is the right place for that server-side step. citeturn153136search16</p>
-        </div>
-        <div class="feature">
-          <h3>Realtime-ready foundation</h3>
-          <p class="muted">The current app uses one-time reads, but Firestore also supports realtime listeners if you want live-updating dashboards later. citeturn153136search18</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="architecture" class="section">
-      <div class="grid-2">
-        <div class="card">
-          <h2>Architecture</h2>
-          <ul style="line-height:1.8;">
-            <li>Firebase Auth handles email/password signup and sign-in.</li>
-            <li>Firestore stores owner profiles in <code class="inline">users/{uid}</code>.</li>
-            <li>Private chatbots live in <code class="inline">users/{uid}/chatbots</code>.</li>
-            <li>Public widget-safe mirrors live in <code class="inline">publicChatbots/{chatbotId}</code>.</li>
-            <li>Public widget-submitted leads land in <code class="inline">publicLeads</code>.</li>
-            <li>Owners can mirror leads into <code class="inline">users/{uid}/leads</code>.</li>
-            <li>Optional Cloud Function handles secure AI chat replies.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h2>Why this is better than pure client-side</h2>
-          <p class="muted">
-            Firebase gives you a realistic path to production without building your own backend first.
-            Firestore supports direct web access, document writes, and query reads from the browser, while Functions gives you a place for secure server-only logic. citeturn153136search0turn153136search3turn153136search16
+      <section id="results" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
+            Why LeadLoop converts
+          </div>
+          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+            Your website should do more than exist. It should help close business.
+          </h2>
+          <p className="mt-5 text-lg leading-8 text-slate-600">
+            LeadLoop is designed to reduce drop-off, answer buyer questions at the right moment, and turn more visitors into qualified leads.
           </p>
-          <div class="notice" style="margin-top:14px;">
-            The widget uses public Firestore documents via the Firestore REST API so it can be embedded on outside sites without exposing owner-only dashboard data. The REST API accepts requests governed by Firestore Security Rules. citeturn153136search15turn153136search21
+        </div>
+
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {[
+            {
+              title: "Respond instantly",
+              text: "Stop losing potential customers when no one is available to answer questions.",
+            },
+            {
+              title: "Capture more leads",
+              text: "Collect names, emails, and buying intent while visitors are actively engaged.",
+            },
+            {
+              title: "Save your team time",
+              text: "Automate repetitive conversations so your team can focus on high-value work.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-lg font-bold text-white">
+                ✓
+              </div>
+              <h3 className="text-xl font-bold">{item.title}</h3>
+              <p className="mt-3 leading-7 text-slate-600">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="features" className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">
+                Everything you need to launch fast
+              </div>
+              <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+                A chatbot platform built for business growth, not technical headaches.
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+                From setup to lead capture to reporting, LeadLoop gives you a clean, simple system for turning your website into a smarter sales channel.
+              </p>
+
+              <div className="mt-10 grid gap-5 sm:grid-cols-2">
+                {[
+                  ["AI-powered answers", "Answer common questions using your business content and offers."],
+                  ["Lead capture forms", "Collect visitor details directly inside the chat experience."],
+                  ["Easy website install", "Add your chatbot to your site in minutes with a simple widget."],
+                  ["Central dashboard", "Track conversations, leads, and performance in one place."],
+                  ["Custom conversation flows", "Guide visitors toward booking, buying, or contacting your team."],
+                  ["Scalable plans", "Start simple and expand as your business or client roster grows."],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                    <h3 className="text-base font-bold">{title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+              <div className="rounded-[1.5rem] bg-slate-950 p-6 text-white">
+                <div className="text-sm text-slate-400">Dashboard snapshot</div>
+                <div className="mt-1 text-2xl font-bold">This week’s performance</div>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {[
+                    ["124", "Conversations started"],
+                    ["38", "Leads captured"],
+                    ["31%", "Lead conversion rate"],
+                    ["5 min", "Average setup time"],
+                  ].map(([value, label]) => (
+                    <div key={label} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
+                      <div className="text-2xl font-black">{value}</div>
+                      <div className="mt-1 text-sm text-slate-300">{label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 rounded-2xl bg-emerald-400/10 p-4 text-sm text-emerald-200 ring-1 ring-emerald-400/20">
+                  Great fit for service providers, consultants, agencies, clinics, local brands, and growing businesses that want more value from website traffic.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="pricing" class="section">
-      <h2 class="section-title">SaaS pricing starter</h2>
-      <div class="grid-3">
-        <div class="card">
-          <h3>Starter</h3>
-          <div style="font-size:2rem;font-weight:900;">$39<span class="muted" style="font-size:1rem;">/mo</span></div>
-          <p class="muted">1 chatbot, widget install, basic leads.</p>
+      <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
+            Simple setup
+          </div>
+          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+            Go from website visitor to captured lead in three simple steps.
+          </h2>
         </div>
-        <div class="card">
-          <h3>Growth</h3>
-          <div style="font-size:2rem;font-weight:900;">$99<span class="muted" style="font-size:1rem;">/mo</span></div>
-          <p class="muted">Multiple chatbots, analytics, custom flows.</p>
-        </div>
-        <div class="card">
-          <h3>Custom</h3>
-          <div style="font-size:2rem;font-weight:900;">Talk to us</div>
-          <p class="muted">Agency and multi-location rollout support.</p>
-        </div>
-      </div>
-    </section>
-  </main>
 
-  <div class="footer">
-    <div class="container">LeadLoop Firebase starter — auth, Firestore, hosting, widget, and functions scaffold.</div>
-  </div>
-</body>
-</html>
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {[
+            ["1", "Create your chatbot", "Add your business details, offers, and key FAQs."],
+            ["2", "Install on your site", "Drop in your widget and publish it in minutes."],
+            ["3", "Capture and convert leads", "Let LeadLoop answer questions and collect contact details automatically."],
+          ].map(([step, title, text]) => (
+            <div key={step} className="relative rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white">
+                {step}
+              </div>
+              <h3 className="text-xl font-bold">{title}</h3>
+              <p className="mt-3 leading-7 text-slate-600">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-slate-950 py-20 text-white">
+        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8">
+          <div className="inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-200">
+            Social proof section
+          </div>
+          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+            Built for the moment when visitors are ready to ask, compare, and decide.
+          </h2>
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-300">
+            Whether someone wants pricing, services, availability, or next steps, LeadLoop helps you stay responsive without needing someone live on chat all day.
+          </p>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {[
+              '“This feels like having a smarter front desk on our website.”',
+              '“Way easier than the other chatbot tools we tried.”',
+              '“We finally have a simple way to capture leads after hours.”',
+            ].map((quote, i) => (
+              <div key={i} className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-left backdrop-blur">
+                <div className="text-lg leading-8 text-slate-100">{quote}</div>
+                <div className="mt-5 text-sm text-slate-400">Example testimonial placeholder</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
+            Pricing
+          </div>
+          <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+            Choose the plan that fits your business stage.
+          </h2>
+        </div>
+
+        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          {[
+            {
+              name: 'Starter',
+              price: '$39',
+              desc: 'Perfect for launching your first chatbot.',
+              features: ['1 chatbot', 'Website widget', 'Basic lead capture', 'Simple dashboard'],
+              featured: false,
+            },
+            {
+              name: 'Growth',
+              price: '$99',
+              desc: 'Best for growing businesses ready to scale.',
+              features: ['Multiple chatbots', 'Advanced lead tracking', 'Custom flows', 'Expanded reporting'],
+              featured: true,
+            },
+            {
+              name: 'Custom',
+              price: 'Talk to us',
+              desc: 'For agencies, multi-location brands, and specialized rollouts.',
+              features: ['Agency support', 'Multi-client setup', 'Custom onboarding', 'Tailored implementation'],
+              featured: false,
+            },
+          ].map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-[2rem] p-8 shadow-sm ring-1 ${
+                plan.featured
+                  ? 'bg-slate-950 text-white ring-slate-950 shadow-2xl'
+                  : 'bg-white text-slate-900 ring-slate-200'
+              }`}
+            >
+              {plan.featured && (
+                <div className="mb-4 inline-flex rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-950">
+                  Most popular
+                </div>
+              )}
+              <h3 className="text-2xl font-bold">{plan.name}</h3>
+              <div className="mt-4 text-4xl font-black">{plan.price}<span className="text-base font-medium opacity-70">{plan.price.startsWith('$') ? '/mo' : ''}</span></div>
+              <p className={`mt-4 leading-7 ${plan.featured ? 'text-slate-300' : 'text-slate-600'}`}>{plan.desc}</p>
+              <ul className={`mt-6 space-y-3 text-sm ${plan.featured ? 'text-slate-200' : 'text-slate-700'}`}>
+                {plan.features.map((feature) => (
+                  <li key={feature}>✓ {feature}</li>
+                ))}
+              </ul>
+              <button
+                className={`mt-8 w-full rounded-2xl px-5 py-4 text-sm font-semibold transition hover:-translate-y-0.5 ${
+                  plan.featured
+                    ? 'bg-emerald-400 text-slate-950 hover:bg-emerald-300'
+                    : 'bg-slate-950 text-white hover:bg-slate-800'
+                }`}
+              >
+                {plan.name === 'Custom' ? 'Contact sales' : 'Start free'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-gradient-to-br from-blue-600 to-emerald-400 py-20 text-slate-950">
+        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8">
+          <h2 className="text-3xl font-black tracking-tight sm:text-5xl">
+            Start turning more website visitors into leads today.
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-900/80">
+            Launch fast, stay responsive, and give your website a job to do.
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <button className="rounded-2xl bg-slate-950 px-6 py-4 text-base font-semibold text-white shadow-xl transition hover:-translate-y-0.5">
+              Start free
+            </button>
+            <button className="rounded-2xl border border-slate-950/15 bg-white/60 px-6 py-4 text-base font-semibold text-slate-950 backdrop-blur transition hover:bg-white/80">
+              Book a demo
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
