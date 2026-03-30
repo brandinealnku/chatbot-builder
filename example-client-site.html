@@ -4,18 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Example Client Site</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body style="font-family:Inter,system-ui,sans-serif;padding:40px;">
   <h1>Example Business Website</h1>
-  <p>This page simulates a real client website where the LeadLoop widget is installed.</p>
+  <p>This simulates a real client website where your chatbot is installed.</p>
 
   <script>
     window.MyChatbotConfig = {
-      chatbotId: "replace-with-real-chatbot-id",
-      projectId: "your-firebase-project-id",
-      functionUrl: "https://us-central1-your-firebase-project-id.cloudfunctions.net/chatReply"
+      chatbotId: "ApjAL1byzovB0Tw5hE7m",
+      projectId: "chatitsbad", 
+      functionUrl: "https://us-central1-chatitsbad.cloudfunctions.net/chatReply"
     };
   </script>
-  <script src="https://your-domain.com/widget.js" async></script>
+
+  <!-- LOCAL TEST -->
+  <script src="./widget.js"></script>
+
+  <!-- OR PRODUCTION -->
+  <!-- <script src="https://yourproject.web.app/widget.js"></script> -->
+
 </body>
 </html>
