@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadLoop Widget Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./widget.css" />
+</head>
+<body style="font-family:Inter,system-ui,sans-serif;padding:40px;line-height:1.6;">
+  <h1>Example Client Site</h1>
+  <p>This simulates a real client website where the LeadLoop widget is installed.</p>
+
+  <script>
+    window.MyChatbotConfig = {
+      chatbotId: "REPLACE_WITH_REAL_CHATBOT_ID",
+      projectId: "REPLACE_WITH_REAL_FIREBASE_PROJECT_ID",
+      mode: "webai"
+    };
+  </script>
+  <script src="./widget.js"></script>
+</body>
+</html>
