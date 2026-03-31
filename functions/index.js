@@ -39,14 +39,10 @@ exports.chatReply = onRequest(
             .slice(-12)
         : [];
 
-      const lastUserMessage =
-        [...safeMessages].reverse().find((m) => m.role === "user")?.content || "";
+      const lastUserMessage = [...safeMessages].reverse().find((m) => m.role === "user")?.content || "";
 
       if (!openai) {
-        return res.json({
-          reply: createMockReply(lastUserMessage, chatbot),
-          mode: "mock"
-        });
+        return res.json({ reply: createMockReply(lastUserMessage, chatbot), mode: "mock" });
       }
 
       const response = await openai.chat.completions.create({
@@ -58,10 +54,7 @@ exports.chatReply = onRequest(
         ]
       });
 
-      const reply =
-        response.choices?.[0]?.message?.content?.trim() ||
-        "I’m sorry, I could not generate a response.";
-
+      const reply = response.choices?.[0]?.message?.content?.trim() || "I’m sorry, I could not generate a response.";
       return res.json({ reply, mode: "openai" });
     } catch (error) {
       logger.error(error);
@@ -71,48 +64,11 @@ exports.chatReply = onRequest(
 );
 
 function buildSystemPrompt(config) {
-  return `You are the website chatbot for ${config.businessName || "this business"}.
-
-Business type: ${config.industry}
-Tone: ${config.tone}
-Primary goal: ${config.primaryGoal}
-
-Business description:
-${config.businessDescription || "No description provided."}
-
-Business hours:
-${config.hours || "Not provided."}
-
-Contact info:
-${config.contact || "Not provided."}
-
-Call to action:
-${config.cta || "Contact the business."}
-
-Service areas:
-${config.serviceAreas || "Not provided."}
-
-Frequently asked questions:
-${Array.isArray(config.faqSeeds) && config.faqSeeds.length
-  ? config.faqSeeds.map((q, i) => `${i + 1}. ${q}`).join("\n")
-  : "No FAQs provided."}
-
-Lead capture fields:
-${config?.leadCapture?.fields?.length ? config.leadCapture.fields.join(", ") : "None specified."}
-
-Instructions:
-- Be concise, friendly, and helpful.
-- Match the selected tone.
-- Use only the business information provided.
-- Do not invent pricing, policies, or hours.
-- If unsure, say so and direct the visitor to the contact information.
-- Support the primary goal: ${config.primaryGoal}.
-- Encourage the CTA when appropriate.`;
+  return `You are the website chatbot for ${config.businessName || "this business"}.\n\nBusiness type: ${config.industry}\nTone: ${config.tone}\nPrimary goal: ${config.primaryGoal}\n\nBusiness description:\n${config.businessDescription || "No description provided."}\n\nBusiness hours:\n${config.hours || "Not provided."}\n\nContact info:\n${config.contact || "Not provided."}\n\nCall to action:\n${config.cta || "Contact the business."}\n\nService areas:\n${config.serviceAreas || "Not provided."}\n\nFrequently asked questions:\n${Array.isArray(config.faqSeeds) && config.faqSeeds.length ? config.faqSeeds.map((q, i) => `${i + 1}. ${q}`).join("\n") : "No FAQs provided."}\n\nLead capture fields:\n${config?.leadCapture?.fields?.length ? config.leadCapture.fields.join(", ") : "None specified."}\n\nInstructions:\n- Be concise, friendly, and helpful.\n- Match the selected tone.\n- Use only the business information provided.\n- Do not invent pricing, policies, or hours.\n- If unsure, say so and direct the visitor to the contact information.\n- Support the primary goal: ${config.primaryGoal}.\n- Encourage the CTA when appropriate.`;
 }
 
 function createMockReply(message, config) {
   const lower = String(message || "").toLowerCase();
-
   if (lower.includes("hours")) {
     return config.hours ? `${config.businessName} is open: ${config.hours}.` : `I don’t see business hours listed yet.`;
   }
@@ -128,6 +84,5 @@ function createMockReply(message, config) {
   if (lower.includes("services") || lower.includes("offer") || lower.includes("do")) {
     return config.businessDescription ? `${config.businessName}: ${config.businessDescription}` : `The business owner has not added service details yet.`;
   }
-
   return `Thanks for reaching out to ${config.businessName || "us"}. I’m here to help with ${String(config.primaryGoal || "your needs").toLowerCase()}. ${config.cta ? `Next step: ${config.cta}.` : ""}`.trim();
 }
