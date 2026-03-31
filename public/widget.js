@@ -1,266 +1,325 @@
 (() => {
-  const existing = document.getElementById("leadloop-widget-root");
-  if (existing) return;
-  const cfg = window.MyChatbotConfig || {};
-  const chatbotId = cfg.chatbotId;
-  const projectId = cfg.projectId;
-  const functionUrl = cfg.functionUrl || null;
-  if (!chatbotId || !projectId) {
-    console.error("LeadLoop widget: missing chatbotId or projectId");
+  const CONFIG = window.MyChatbotConfig || {};
+  const CHATBOT_ID = CONFIG.chatbotId || "";
+  const PROJECT_ID = CONFIG.projectId || "";
+  const MODE = CONFIG.mode || "webai";
+
+  if (!CHATBOT_ID || !PROJECT_ID) {
+    console.warn("LeadLoop widget: Missing chatbotId or projectId.");
     return;
   }
 
-  const firestoreBase = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+  const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
+  const PUBLIC_CHATBOT_URL = `${FIRESTORE_BASE}/publicChatbots/${CHATBOT_ID}`;
 
-  const state = { bot: null, open: false, messages: [] };
+  let chatbotConfig = null;
+  let widgetOpen = false;
+  let messages = [];
+  let webllmEngine = null;
+  let webllmReady = false;
+  let webllmLoading = false;
+  const WEBLLM_MODEL = "Llama-3.2-1B-Instruct-q4f32_1-MLC";
+  const state = { mounted: false, awaitingLeadCapture: false };
 
-  const style = document.createElement("style");
-  style.textContent = `
-    #leadloop-widget-root{all:initial;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .ll-launcher{position:fixed;right:20px;bottom:20px;z-index:2147483647;border:none;cursor:pointer;border-radius:999px;padding:14px 18px;color:#fff;font-weight:800;box-shadow:0 20px 40px rgba(0,0,0,.25)}
-    .ll-panel{position:fixed;right:20px;bottom:84px;width:min(390px,calc(100vw - 20px));height:590px;background:#fff;border-radius:20px;border:1px solid rgba(15,23,42,.12);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.24);z-index:2147483647;display:none;color:#0f172a}
-    .ll-top{color:#fff;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .ll-title{font-weight:900;font-size:15px}.ll-sub{font-size:12px;opacity:.92}
-    .ll-close{border:none;background:rgba(255,255,255,.18);color:#fff;border-radius:999px;width:34px;height:34px;cursor:pointer}
-    .ll-messages{height:395px;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px}
-    .ll-bubble{max-width:84%;padding:11px 13px;border-radius:15px;font-size:14px;line-height:1.4;white-space:pre-wrap}
-    .ll-assistant{align-self:flex-start;background:#e2e8f0;color:#0f172a;border-top-left-radius:6px}
-    .ll-user{align-self:flex-end;color:#fff;border-top-right-radius:6px}
-    .ll-inputbar{display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid rgba(15,23,42,.08)}
-    .ll-input{flex:1;border:1px solid rgba(15,23,42,.14);border-radius:12px;padding:12px;font:inherit;outline:none}
-    .ll-send{border:none;color:#fff;border-radius:12px;padding:0 14px;font-weight:800;cursor:pointer}
-    .ll-lead{display:none;gap:8px;flex-direction:column;padding:12px;border-top:1px solid rgba(15,23,42,.08);background:#fff}
-    .ll-lead input{border:1px solid rgba(15,23,42,.14);border-radius:12px;padding:10px;font:inherit}
-    .ll-lead button{border:none;color:#fff;border-radius:12px;padding:11px 12px;font-weight:800;cursor:pointer}
-  `;
-  document.head.appendChild(style);
+  init();
 
-  const root = document.createElement("div");
-  root.id = "leadloop-widget-root";
-  const launcher = document.createElement("button");
-  launcher.className = "ll-launcher";
-  launcher.textContent = "Chat with us";
-
-  const panel = document.createElement("div");
-  panel.className = "ll-panel";
-  const top = document.createElement("div");
-  top.className = "ll-top";
-  const titleWrap = document.createElement("div");
-  titleWrap.innerHTML = `<div class="ll-title">Website Assistant</div><div class="ll-sub">Ready to help</div>`;
-  const close = document.createElement("button");
-  close.className = "ll-close";
-  close.innerHTML = "&times;";
-  top.append(titleWrap, close);
-
-  const messages = document.createElement("div");
-  messages.className = "ll-messages";
-  const lead = document.createElement("div");
-  lead.className = "ll-lead";
-  const inputBar = document.createElement("div");
-  inputBar.className = "ll-inputbar";
-  const input = document.createElement("input");
-  input.className = "ll-input";
-  input.placeholder = "Type your message...";
-  const send = document.createElement("button");
-  send.className = "ll-send";
-  send.textContent = "Send";
-  inputBar.append(input, send);
-
-  panel.append(top, messages, lead, inputBar);
-  root.append(launcher, panel);
-  document.body.appendChild(root);
-
-  function themeColor() {
-    return state.bot?.theme?.primaryColor || "#6d5efc";
-  }
-
-  function applyTheme() {
-    const c = themeColor();
-    launcher.style.background = c;
-    send.style.background = c;
-    top.style.background = c;
-  }
-
-  function addMessage(role, text) {
-    const el = document.createElement("div");
-    el.className = `ll-bubble ${role === "assistant" ? "ll-assistant" : "ll-user"}`;
-    if (role === "user") el.style.background = themeColor();
-    el.textContent = text;
-    messages.appendChild(el);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function normalizeFirestoreValue(value) {
-    if ("stringValue" in value) return value.stringValue;
-    if ("integerValue" in value) return Number(value.integerValue);
-    if ("doubleValue" in value) return Number(value.doubleValue);
-    if ("booleanValue" in value) return value.booleanValue;
-    if ("arrayValue" in value) return (value.arrayValue.values || []).map(normalizeFirestoreValue);
-    if ("mapValue" in value) {
-      const out = {};
-      const fields = value.mapValue.fields || {};
-      for (const [k, v] of Object.entries(fields)) out[k] = normalizeFirestoreValue(v);
-      return out;
+  async function init() {
+    try {
+      chatbotConfig = await loadChatbotConfig();
+    } catch (error) {
+      console.error("LeadLoop widget: failed to load chatbot config", error);
+      chatbotConfig = getFallbackConfig();
     }
-    if ("timestampValue" in value) return value.timestampValue;
+    buildWidget();
+    state.mounted = true;
+  }
+
+  async function loadChatbotConfig() {
+    const response = await fetch(PUBLIC_CHATBOT_URL);
+    if (!response.ok) throw new Error(`Failed to fetch chatbot config (${response.status})`);
+    return parseFirestoreDocument(await response.json());
+  }
+
+  function parseFirestoreDocument(doc) {
+    const fields = doc.fields || {};
+    const parsed = {
+      id: CHATBOT_ID,
+      name: readString(fields.name),
+      businessName: readString(fields.businessName),
+      websiteUrl: readString(fields.websiteUrl),
+      industry: readString(fields.industry),
+      tone: readString(fields.tone),
+      primaryGoal: readString(fields.primaryGoal),
+      businessDescription: readString(fields.businessDescription),
+      hours: readString(fields.hours),
+      contact: readString(fields.contact),
+      serviceAreas: readString(fields.serviceAreas),
+      cta: readString(fields.cta),
+      status: readString(fields.status) || "live",
+      systemPrompt: readString(fields.systemPrompt),
+      faqSeeds: readArray(fields.faqSeeds),
+      theme: readMap(fields.theme),
+      leadCapture: readMap(fields.leadCapture)
+    };
+    parsed.theme = {
+      primaryColor: parsed.theme?.primaryColor || "#2563eb",
+      launcherText: parsed.theme?.launcherText || "Chat with us",
+      position: parsed.theme?.position || "bottom-right"
+    };
+    parsed.leadCapture = {
+      enabled: parsed.leadCapture?.enabled === true || parsed.primaryGoal === "Capture leads" || parsed.primaryGoal === "Book appointments",
+      fields: Array.isArray(parsed.leadCapture?.fields) ? parsed.leadCapture.fields : []
+    };
+    return parsed;
+  }
+
+  function readString(field) { return field?.stringValue ?? ""; }
+  function readArray(field) { return field?.arrayValue?.values ? field.arrayValue.values.map(v => v.stringValue || "") : []; }
+  function readMap(field) {
+    if (!field?.mapValue?.fields) return {};
+    const result = {};
+    Object.entries(field.mapValue.fields).forEach(([key, value]) => {
+      if (value.stringValue !== undefined) result[key] = value.stringValue;
+      else if (value.booleanValue !== undefined) result[key] = value.booleanValue;
+      else if (value.arrayValue !== undefined) result[key] = readArray(value);
+      else if (value.mapValue !== undefined) result[key] = readMap(value);
+    });
+    return result;
+  }
+
+  function getFallbackConfig() {
+    return {
+      id: CHATBOT_ID,
+      name: "Website Assistant",
+      businessName: "LeadLoop Assistant",
+      websiteUrl: "",
+      industry: "General",
+      tone: "Friendly and helpful",
+      primaryGoal: "Answer customer questions",
+      businessDescription: "I help answer questions and guide visitors to the next step.",
+      faqSeeds: [],
+      hours: "",
+      contact: "",
+      serviceAreas: "",
+      cta: "Contact us to get started",
+      status: "live",
+      theme: { primaryColor: "#2563eb", launcherText: "Chat with us", position: "bottom-right" },
+      leadCapture: { enabled: false, fields: [] },
+      systemPrompt: ""
+    };
+  }
+
+  function buildWidget() {
+    document.documentElement.style.setProperty("--leadloop-primary", chatbotConfig.theme?.primaryColor || "#2563eb");
+    const root = document.createElement("div");
+    root.id = "leadloop-widget-root";
+    root.innerHTML = `
+      <button id="leadloop-launcher" aria-label="Open chat widget">
+        <span class="leadloop-launcher-dot"></span>
+        <span class="leadloop-launcher-text">${escapeHtml(chatbotConfig.theme?.launcherText || "Chat with us")}</span>
+      </button>
+      <section id="leadloop-panel" class="leadloop-hidden" aria-live="polite" aria-label="Chat widget">
+        <div class="leadloop-header">
+          <div class="leadloop-header-copy">
+            <div class="leadloop-title">${escapeHtml(chatbotConfig.businessName || chatbotConfig.name || "Assistant")}</div>
+            <div class="leadloop-subtitle">${escapeHtml(getSubtitle())}</div>
+          </div>
+          <button id="leadloop-close" aria-label="Close chat">×</button>
+        </div>
+        <div id="leadloop-messages" class="leadloop-messages"></div>
+        <div id="leadloop-suggestions" class="leadloop-suggestions"></div>
+        <form id="leadloop-input-form" class="leadloop-input-wrap">
+          <input id="leadloop-input" type="text" placeholder="${escapeHtml(getInputPlaceholder())}" />
+          <button type="submit" id="leadloop-send">Send</button>
+        </form>
+      </section>`;
+    document.body.appendChild(root);
+    if (chatbotConfig.theme?.position === "bottom-left") root.classList.add("leadloop-left");
+    document.getElementById("leadloop-launcher").addEventListener("click", () => toggleWidget(true));
+    document.getElementById("leadloop-close").addEventListener("click", () => toggleWidget(false));
+    document.getElementById("leadloop-input-form").addEventListener("submit", onSubmitMessage);
+    renderWelcome();
+    renderSuggestions();
+  }
+
+  function toggleWidget(open) {
+    widgetOpen = open;
+    const panel = document.getElementById("leadloop-panel");
+    if (open) {
+      panel.classList.remove("leadloop-hidden");
+      setTimeout(() => document.getElementById("leadloop-input")?.focus(), 80);
+    } else {
+      panel.classList.add("leadloop-hidden");
+    }
+  }
+
+  function renderWelcome() {
+    appendMessage("assistant", `Hi! Welcome to ${chatbotConfig.businessName || "our site"}. ${getWelcomeLine()}`);
+  }
+  function getWelcomeLine() {
+    return (chatbotConfig.industry || "").toLowerCase() === "education"
+      ? "I can help answer questions about course materials, policies, deadlines, and next steps."
+      : "I can help answer questions and point you toward the next step.";
+  }
+  function getSubtitle() { return `${chatbotConfig.primaryGoal || "Answer customer questions"} • ${chatbotConfig.tone || "Friendly and helpful"}`; }
+  function getInputPlaceholder() { return (chatbotConfig.industry || "").toLowerCase() === "education" ? "Ask about the course, policies, or assignments..." : "Ask a question..."; }
+  function renderSuggestions() {
+    const wrap = document.getElementById("leadloop-suggestions");
+    const suggestions = (chatbotConfig.industry || "").toLowerCase() === "education"
+      ? ["What is the attendance policy?", "When are office hours?", "What assignments are due?", "How can I contact the instructor?"]
+      : ["What services do you offer?", "What are your hours?", "How can I contact you?", "How do I get started?"];
+    wrap.innerHTML = "";
+    suggestions.forEach(text => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "leadloop-chip";
+      btn.textContent = text;
+      btn.addEventListener("click", () => {
+        const input = document.getElementById("leadloop-input");
+        input.value = text;
+        input.focus();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  async function onSubmitMessage(event) {
+    event.preventDefault();
+    const input = document.getElementById("leadloop-input");
+    const text = (input.value || "").trim();
+    if (!text) return;
+    appendMessage("user", text);
+    messages.push({ role: "user", content: text });
+    input.value = "";
+    const typingId = appendTyping();
+    try {
+      let reply = "";
+      if (MODE === "webai") {
+        try { reply = await generateWebAIReply(text); }
+        catch (error) { console.warn("LeadLoop widget: WebAI unavailable, using fallback", error); reply = generateMockReply(text, chatbotConfig); }
+      } else {
+        reply = generateMockReply(text, chatbotConfig);
+      }
+      removeTyping(typingId);
+      appendMessage("assistant", reply);
+      messages.push({ role: "assistant", content: reply });
+      if (shouldPromptLeadCapture(text)) {
+        const leadPrompt = buildLeadPrompt();
+        appendMessage("assistant", leadPrompt);
+        messages.push({ role: "assistant", content: leadPrompt });
+        state.awaitingLeadCapture = true;
+      }
+    } catch (error) {
+      console.error(error);
+      removeTyping(typingId);
+      appendMessage("assistant", "Sorry — I’m having trouble responding right now. Please try again in a moment.");
+    }
+  }
+
+  async function ensureWebLLMReady() {
+    if (webllmReady && webllmEngine) return webllmEngine;
+    if (webllmLoading) {
+      while (webllmLoading) await wait(250);
+      return webllmEngine;
+    }
+    if (!("gpu" in navigator)) throw new Error("WebGPU is not available in this browser.");
+    webllmLoading = true;
+    try {
+      const webllm = await import("https://esm.run/@mlc-ai/web-llm");
+      webllmEngine = await webllm.CreateMLCEngine(WEBLLM_MODEL, {
+        initProgressCallback: (progress) => console.log("LeadLoop widget WebAI loading:", progress?.text || "", progress?.progress || "")
+      });
+      webllmReady = true;
+      return webllmEngine;
+    } finally {
+      webllmLoading = false;
+    }
+  }
+
+  async function generateWebAIReply(userText) {
+    const engine = await ensureWebLLMReady();
+    const completion = await engine.chat.completions.create({
+      messages: [{ role: "system", content: chatbotConfig.systemPrompt || buildSystemPrompt(chatbotConfig) }, ...messages],
+      temperature: 0.4
+    });
+    return completion?.choices?.[0]?.message?.content?.trim() || generateMockReply(userText, chatbotConfig);
+  }
+
+  function buildSystemPrompt(config) {
+    return `You are the website chatbot for ${config.businessName || "this organization"}.\n\nBusiness type: ${config.industry || "General"}\nTone: ${config.tone || "Friendly and helpful"}\nPrimary goal: ${config.primaryGoal || "Answer customer questions"}\n\nBusiness description:\n${config.businessDescription || "No description provided."}\n\nBusiness hours:\n${config.hours || "Not provided."}\n\nContact info:\n${config.contact || "Not provided."}\n\nCall to action:\n${config.cta || "Contact the organization."}\n\nService areas:\n${config.serviceAreas || "Not provided."}\n\nFrequently asked questions:\n${Array.isArray(config.faqSeeds) && config.faqSeeds.length ? config.faqSeeds.map((q, i) => `${i + 1}. ${q}`).join("\n") : "No FAQs provided."}\n\nInstructions:\n- Be concise, friendly, and helpful.\n- Match the selected tone.\n- Use only the information provided.\n- Do not invent pricing, deadlines, policies, or hours.\n- If unsure, say so and direct the visitor to the contact information.\n- Encourage the CTA when appropriate.`;
+  }
+
+  function generateMockReply(message, config) {
+    const text = String(message || "").trim();
+    const lower = text.toLowerCase();
+    const businessName = config.businessName || "our business";
+    const tone = String(config.tone || "Friendly and helpful").toLowerCase();
+    const goal = String(config.primaryGoal || "Answer customer questions").toLowerCase();
+    const hours = config.hours || "";
+    const contact = config.contact || "";
+    const serviceAreas = config.serviceAreas || "";
+    const cta = config.cta || "Contact us to get started";
+    const description = config.businessDescription || "";
+    const faqs = Array.isArray(config.faqSeeds) ? config.faqSeeds : [];
+    const leadFields = config?.leadCapture?.fields || [];
+    const include = (words) => words.some(word => lower.includes(word));
+    const format = (content) => tone.includes("professional") ? content : tone.includes("warm") ? `Absolutely — ${content}` : tone.includes("confident") ? `Certainly. ${content}` : content;
+    const leadPrompt = () => leadFields.length ? `If you'd like, I can help you get started. Please share your ${leadFields.join(", ")}.` : `The best next step is: ${cta}.`;
+    if (!text) return format(`Hi! Welcome to ${businessName}. How can I help today?`);
+    if (include(["hi","hello","hey","good morning","good afternoon","good evening"])) return format(`Hi! Welcome to ${businessName}. I can help with questions, policies, contact details, and next steps.`);
+    if (include(["thanks","thank you","thx"])) return format(`You’re welcome. ${cta ? `If you're ready, ${cta}.` : `Let me know how else I can help.`}`);
+    if (include(["hours","open","close","availability","office hours"])) return format(hours ? `${businessName} hours are ${hours}.` : `I don’t see hours listed yet.${contact ? ` You can reach us here: ${contact}.` : ""}`);
+    if (include(["contact","phone","email","reach","call","instructor"])) return format(contact ? `You can reach ${businessName} here: ${contact}.` : `I don’t have contact details listed yet, but I can still help with general questions.`);
+    if (include(["where","location","located","service area","serve"])) return format(serviceAreas ? `${businessName} serves or focuses on: ${serviceAreas}.` : `I don’t see a location or focus area listed yet.`);
+    if (include(["services","offer","what do you do","help with","assignment","course"])) return format(description ? `${businessName} overview: ${description}` : `The owner has not added more detail yet, but I can still help point you in the right direction.`);
+    if (include(["price","pricing","cost","how much","quote","rates"])) return format(`I don’t want to invent pricing if it hasn’t been provided.${contact ? ` For exact pricing, please contact us at ${contact}.` : ""} ${leadPrompt()}`);
+    if (include(["book","appointment","schedule","reserve","consultation","demo"])) return format(`${cta ? `${cta}.` : "We’d be happy to help you get started."} ${leadPrompt()}`);
+    if (include(["interested","get started","sign up","contact me","email me"])) return format(`It sounds like you're interested in the next step. ${leadPrompt()}`);
+    const matchedFaq = matchFaq(lower, faqs, description); if (matchedFaq) return format(matchedFaq);
+    if (goal.includes("capture leads")) return format(`I’m here to answer questions and help you get started. ${leadPrompt()}`);
+    if (goal.includes("book")) return format(`I can help with appointments and next steps. ${cta ? `${cta}.` : leadPrompt()}`);
+    return format(`Thanks for reaching out to ${businessName}. I’m here to help with ${goal}.${description ? ` Here’s a quick overview: ${description}` : ""}${cta ? ` Next step: ${cta}.` : ""}`);
+  }
+
+  function matchFaq(lower, faqs, description) {
+    if (!faqs.length) return null;
+    for (const faq of faqs) {
+      const faqWords = faq.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      const matches = faqWords.filter(w => lower.includes(w));
+      if (matches.length >= 2) return `A common question we receive is: "${faq}"${description ? ` Based on our information: ${description}` : ""}`;
+    }
     return null;
   }
-
-  function fromFirestoreDoc(doc) {
-    const fields = doc.fields || {};
-    const out = {};
-    for (const [k, v] of Object.entries(fields)) out[k] = normalizeFirestoreValue(v);
-    return out;
+  function shouldPromptLeadCapture(userText) {
+    if (!chatbotConfig.leadCapture?.enabled || state.awaitingLeadCapture) return false;
+    return ["price","pricing","cost","quote","book","appointment","consultation","demo","contact","interested","get started"].some(word => userText.toLowerCase().includes(word));
   }
-
-  function toFirestoreFields(obj) {
-    const out = {};
-    for (const [key, val] of Object.entries(obj)) {
-      if (typeof val === "string") out[key] = { stringValue: val };
-      else if (typeof val === "number") out[key] = { integerValue: String(val) };
-      else if (typeof val === "boolean") out[key] = { booleanValue: val };
-      else if (Array.isArray(val)) out[key] = { arrayValue: { values: val.map(v => ({ stringValue: String(v) })) } };
-      else if (val && typeof val === "object") {
-        const mapFields = {};
-        for (const [k, v] of Object.entries(val)) mapFields[k] = { stringValue: String(v || "") };
-        out[key] = { mapValue: { fields: mapFields } };
-      } else out[key] = { stringValue: String(val ?? "") };
-    }
-    return out;
+  function buildLeadPrompt() {
+    const fields = chatbotConfig.leadCapture?.fields || [];
+    return fields.length ? `If you'd like to continue, please share your ${fields.join(", ")}.` : chatbotConfig.cta ? `If you'd like to move forward, ${chatbotConfig.cta}.` : "If you'd like to move forward, please contact us directly.";
   }
-
-  async function loadChatbot() {
-    const res = await fetch(`${firestoreBase}/publicChatbots/${encodeURIComponent(chatbotId)}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Failed to load chatbot.");
-    state.bot = fromFirestoreDoc(data);
-
-    titleWrap.innerHTML = `<div class="ll-title">${escapeHtml(state.bot.businessName || "Website Assistant")}</div>
-      <div class="ll-sub">${escapeHtml(state.bot.primaryGoal || "Ready to help")}</div>`;
-    launcher.textContent = state.bot?.theme?.launcherText || "Chat with us";
-    applyTheme();
-    addMessage("assistant", `Hi! Welcome to ${state.bot.businessName || "our business"}. How can I help today?`);
-    renderLeadForm();
+  function appendTyping() {
+    const id = `typing-${Date.now()}`;
+    const wrap = document.getElementById("leadloop-messages");
+    const div = document.createElement("div");
+    div.className = "leadloop-message assistant";
+    div.dataset.typingId = id;
+    div.innerHTML = `<div class="leadloop-bubble leadloop-typing"><span></span><span></span><span></span></div>`;
+    wrap.appendChild(div);
+    wrap.scrollTop = wrap.scrollHeight;
+    return id;
   }
-
-  function renderLeadForm() {
-    if (!state.bot?.leadCapture?.enabled || !state.bot?.leadCapture?.fields?.length) {
-      lead.style.display = "none";
-      return;
-    }
-    lead.innerHTML = "";
-    const heading = document.createElement("div");
-    heading.style.fontWeight = "900";
-    heading.textContent = "Want a follow-up?";
-    lead.appendChild(heading);
-
-    const inputs = {};
-    state.bot.leadCapture.fields.forEach(field => {
-      const el = document.createElement("input");
-      el.placeholder = field;
-      inputs[field] = el;
-      lead.appendChild(el);
-    });
-
-    const submit = document.createElement("button");
-    submit.textContent = "Submit";
-    submit.style.background = themeColor();
-    submit.addEventListener("click", async () => {
-      const fields = {};
-      Object.entries(inputs).forEach(([k, v]) => fields[k] = v.value.trim());
-
-      const leadPayload = {
-        ownerId: state.bot.ownerId || "",
-        chatbotId,
-        businessName: state.bot.businessName || "",
-        fields
-      };
-
-      try {
-        const res = await fetch(`${firestoreBase}/publicLeads`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fields: toFirestoreFields(leadPayload) })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || "Lead submission failed.");
-        addMessage("assistant", "Thanks — your details were submitted.");
-        lead.style.display = "none";
-      } catch (error) {
-        addMessage("assistant", `Sorry — ${error.message}`);
-      }
-    });
-
-    lead.appendChild(submit);
-    lead.style.display = "flex";
+  function removeTyping(id) { const el = document.querySelector(`[data-typing-id="${id}"]`); if (el) el.remove(); }
+  function appendMessage(role, text) {
+    const wrap = document.getElementById("leadloop-messages");
+    const div = document.createElement("div");
+    div.className = `leadloop-message ${role}`;
+    div.innerHTML = `<div class="leadloop-bubble">${escapeHtml(text)}</div>`;
+    wrap.appendChild(div);
+    wrap.scrollTop = wrap.scrollHeight;
   }
-
-  function createMockReply(text) {
-    const lower = String(text || "").toLowerCase();
-    if (lower.includes("hours")) return state.bot.hours ? `${state.bot.businessName} is open: ${state.bot.hours}.` : "I don’t see business hours listed yet.";
-    if (lower.includes("contact")) return state.bot.contact ? `You can contact ${state.bot.businessName} here: ${state.bot.contact}.` : "I don’t have contact info listed yet.";
-    if (lower.includes("book")) return state.bot.cta ? `I can help with that. ${state.bot.cta}.` : "Please contact the business to get started.";
-    return `Thanks for reaching out to ${state.bot.businessName || "us"}. I’m here to help with ${String(state.bot.primaryGoal || "your needs").toLowerCase()}.`;
+  function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  function escapeHtml(str) {
+    return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
   }
-
-  async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-    addMessage("user", text);
-    state.messages.push({ role: "user", content: text });
-    input.value = "";
-
-    if (!functionUrl) {
-      const reply = createMockReply(text);
-      addMessage("assistant", reply);
-      state.messages.push({ role: "assistant", content: reply });
-      return;
-    }
-
-    try {
-      const response = await fetch(functionUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatbotId, messages: state.messages })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Chat failed.");
-      addMessage("assistant", data.reply);
-      state.messages.push({ role: "assistant", content: data.reply });
-    } catch (error) {
-      addMessage("assistant", `Sorry — ${error.message}`);
-    }
-  }
-
-  launcher.addEventListener("click", () => {
-    state.open = !state.open;
-    panel.style.display = state.open ? "block" : "none";
-  });
-  close.addEventListener("click", () => {
-    state.open = false;
-    panel.style.display = "none";
-  });
-  send.addEventListener("click", sendMessage);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  loadChatbot().catch((error) => {
-    console.error(error);
-    panel.style.display = "block";
-    state.open = true;
-    addMessage("assistant", `Widget failed to load: ${error.message}`);
-  });
 })();
